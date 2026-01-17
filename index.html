@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Visa | 기업용 외국인 비자 통합 관리 솔루션</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+KR:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #f8fafc; color: #334155; overflow-x: hidden; scroll-behavior: smooth; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
+        .hero-gradient { background: radial-gradient(circle at 50% -20%, #e2e8f0 0%, #f8fafc 100%); }
+        .bento-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; }
+        .bento-card:hover { transform: translateY(-5px); border-color: #4f46e5; }
+        .risk-text { color: #dc2626; font-weight: 700; }
+        .form-input { width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #334155; font-size: 15px; }
+        .form-input:focus { border-color: #4f46e5; outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .form-label { display: block; font-weight: 700; color: #475569; margin-bottom: 8px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <nav class="fixed top-0 w-full z-50 glass">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 5L15 20V45C15 65.5 29.8 84.4 50 90C70.2 84.4 85 65.5 85 45V20L50 5Z" fill="#1E293B" stroke="#334155" stroke-width="2"/>
+                    <path d="M35 50L45 60L65 35" stroke="#D4AF37" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-2xl font-black tracking-tighter text-slate-900">CHECK VISA</span>
+            </div>
+            
+            <div class="hidden md:flex gap-8 text-sm font-medium text-slate-600">
+                <a href="#features" class="hover:text-indigo-600 transition">핵심로직</a>
+                <a href="#risk" class="hover:text-red-600 transition font-bold">리스크관리</a>
+                <a href="pricing.html" class="hover:text-indigo-600 transition font-black text-indigo-600 underline underline-offset-4">구독료 안내</a>
+                <a href="#contact" class="hover:text-indigo-600 transition">상담신청</a>
+            </div>
+            
+            <a href="https://checkvisa.softr.app" class="px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-full hover:bg-indigo-700 transition shadow-md">인사담당자 전용 포털</a>
+        </div>
+    </nav>
+
+    <header class="relative pt-48 pb-20 hero-gradient text-center">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 border border-red-100 text-xs font-bold text-red-600 mb-8 shadow-sm">
+                🎉 신규 가입 혜택: 프로모션기간 무료체험 혜택
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-[1.1] text-slate-900">
+                비자 관리의 공백,<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500">전문가의 확인으로 채웁니다.</span>
+            </h1>
+            <p class="text-slate-600 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light">
+                VISA 전문 행정사가 실시간으로 체류 상태를 직접 검토하고 관리합니다.<br>회사별 전용 포털에서 모든 근로자의 비자 만료일을 안전하게 연속 관리하세요.
+            </p>
+            <div class="mb-20">
+                <a href="#contact" class="px-10 py-5 bg-indigo-600 rounded-2xl font-bold text-xl hover:bg-indigo-700 transition shadow-xl text-white">전문가 도입 상담</a>
+            </div>
+
+            <div class="relative max-w-5xl mx-auto bg-white rounded-3xl p-4 border border-slate-200 shadow-2xl">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl">
+                    <div class="bg-white p-6 rounded-2xl text-left border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">E-7-4</span>
+                        <h3 class="text-lg font-bold text-slate-800">NGUYEN VAN A</h3>
+                        <p class="text-2xl font-black text-indigo-600">D-542</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl text-left border-2 border-indigo-500 ring-4 ring-indigo-50">
+                        <span class="text-[10px] font-bold text-orange-500 uppercase">🚨 조회필요</span>
+                        <h3 class="text-lg font-bold text-slate-800">KHAN MOHAMMAD</h3>
+                        <p class="text-2xl font-black text-orange-600 font-black">D-43</p>
+                        <div class="mt-4 w-full py-2 bg-indigo-600 rounded-lg text-center text-[10px] font-bold text-white">전문가 검토 요청</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl text-left border border-slate-200">
+                        <span class="text-[10px] font-bold text-red-500 uppercase">🚨 만료임박</span>
+                        <h3 class="text-lg font-bold text-slate-800">JASON PARK</h3>
+                        <p class="text-2xl font-black text-red-600">D-15</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="risk" class="py-24 bg-red-50">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">비자 관리, <span class="risk-text text-red-600">실수 한 번의 기회</span>도 없습니다.</h2>
+            <p class="text-xl text-slate-700 mb-12 font-light">체류 기간 연장, 단 하루만 지체되어도 <span class="risk-text">출입국관리법 위반</span>의 무거운 책임이 따릅니다.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-8 bento-card rounded-3xl">
+                    <h4 class="font-bold mb-2 text-slate-800 text-lg text-lg">법적 처벌 리스크</h4>
+                    <p class="text-sm text-slate-600">만료일 도과 시 근로자는 불법 체류자가 되며, 기업은 즉각적인 법적 책임을 집니다.</p>
+                </div>
+                <div class="p-8 bento-card rounded-3xl">
+                    <h4 class="font-bold mb-2 text-slate-800 text-lg">과중한 범칙금</h4>
+                    <p class="text-sm text-slate-600">불법 고용 및 체류 기록은 기업과 근로자 양측에 상당한 금액의 범칙금을 발생시킵니다.</p>
+                </div>
+                <div class="p-8 bento-card rounded-3xl">
+                    <h4 class="font-bold mb-2 text-slate-800 text-lg">기업 고용 제한</h4>
+                    <p class="text-sm text-slate-600">관리 소홀 기록은 향후 외국인력 배정 및 고용 허가 시 중대한 감점 사유가 됩니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-32 px-6 bg-white">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-4xl font-black mb-16 text-center">행정사 검증 기반의<br>연속적 관리 시스템</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 p-10 rounded-[2.5rem] bento-card relative overflow-hidden group">
+                    <div class="relative z-10">
+                        <h3 class="text-3xl font-bold mb-4">체계적인 업데이트 로직</h3>
+                        <p class="text-slate-600 leading-relaxed max-w-md">연장 신고 후 포털에서 '검토 요청'을 클릭하세요. 행정사가 공식 데이터를 대조 확인한 후 시스템 만료일을 자동 갱신하여 관리의 연속성을 보장합니다.</p>
+                    </div>
+                    <div class="absolute right-[-10%] bottom-[-10%] w-64 h-64 bg-indigo-100/60 blur-3xl"></div>
+                </div>
+                <div class="p-10 rounded-[2.5rem] bento-card flex flex-col justify-between">
+                    <div class="text-4xl mb-6">💼</div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2 text-slate-800">인사담당자 전용 포털</h3>
+                        <p class="text-slate-600 text-sm">회사별 독립 포털을 통해 여러 근로자의 비자 상태를 우선순위에 따라 실시간 파악하세요.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-32 bg-indigo-50">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-black mb-4 tracking-tight text-slate-900">비자 관리 도입 무료상담신청</h2>
+                <p class="text-slate-600">온라인 비공개상담으로 편리하게 관리 시스템 도입을 문의하시기 바랍니다.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-indigo-100">
+                <form action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-left text-left">
+                        <div>
+                            <label class="form-label">성함</label>
+                            <input type="text" name="name" class="form-input" placeholder="성함/담당자명" required>
+                        </div>
+                        <div>
+                            <label class="form-label">연락처</label>
+                            <input type="text" name="tel" class="form-input" placeholder="연락처" required>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-left">
+                        <div>
+                            <label class="form-label">회사/지역</label>
+                            <input type="text" name="company" class="form-input" placeholder="회사명 및 지역" required>
+                        </div>
+                        <div>
+                            <label class="form-label">상담분야</label>
+                            <select name="category" class="form-input">
+                                <option>신규 시스템 도입 상담</option>
+                                <option>비자 업무 통합 대행</option>
+                                <option>관리 시스템 유지 보수</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-8 text-left">
+                        <label class="form-label">상담내용</label>
+                        <textarea name="message" class="form-input h-32 resize-none" placeholder="문의하실 내용을 입력해 주세요."></textarea>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 mb-10 text-xs text-slate-500">
+                        <input type="checkbox" id="privacy" class="w-4 h-4 rounded border-slate-300 text-indigo-600" required>
+                        <label for="privacy">개인정보 수집 및 활용동의 <span class="underline ml-1 cursor-pointer">자세히보기</span></label>
+                    </div>
+                    <button type="submit" class="w-full py-5 bg-indigo-600 rounded-2xl font-black text-xl text-white shadow-lg hover:bg-indigo-700 transition">무료 체험 신청하기</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 border-t bg-white text-center">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-slate-500 text-sm">
+                © 2026 CHECK VISA. All rights reserved. <br>
+                본 플랫폼은 법무부 등록 출입국 민원대행 기관인 <b>행정사사무소 늘좋은</b>에 의해 운영됩니다.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
