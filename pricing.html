@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>구독료 안내 | Check Visa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+KR:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #f8fafc; color: #334155; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .pricing-card { background: #ffffff; border: 1px solid #e2e8f0; transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .pricing-card:hover { transform: translateY(-10px); border-color: #4f46e5; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); }
+        .promo-tag { background: #fee2e2; color: #dc2626; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; }
+        .fee-highlight { color: #4f46e5; font-weight: 800; }
+    </style>
+</head>
+<body class="pt-32 pb-20">
+    <nav class="fixed top-0 w-full z-50 glass border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg width="40" height="40" viewBox="0 0 100 100" fill="none">
+                    <path d="M50 5L15 20V45C15 65.5 29.8 84.4 50 90C70.2 84.4 85 65.5 85 45V20L50 5Z" fill="#1E293B"/>
+                    <path d="M35 50L45 60L65 35" stroke="#D4AF37" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-xl font-black text-slate-900">CHECK VISA</span>
+            </div>
+            <a href="index.html" class="text-sm font-bold text-slate-600 hover:text-indigo-600">메인으로 돌아가기</a>
+        </div>
+    </nav>
+
+    <section class="max-w-5xl mx-auto px-6 text-center mb-16">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-xs font-bold text-indigo-600 mb-6 font-black">
+            📢 가입 혜택: 프로모션 기간 무료체험 혜택
+        </div>
+        <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-6">최소한의 비용으로<br>완벽한 비자 행정 시스템을 갖추세요.</h1>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+        
+        <div class="pricing-card p-8 rounded-[2rem]">
+            <div class="mb-6">
+                <span class="promo-tag">Best for Small</span>
+                <h3 class="text-xl font-bold mt-3">Starter</h3>
+                <p class="text-slate-400 text-xs mt-1">5인 이하 소규모 고용주</p>
+            </div>
+            <div class="mb-8">
+                <span class="text-3xl font-black text-slate-900 font-black">월 9,900원</span>
+                <p class="text-indigo-600 text-[10px] font-bold mt-2 font-black">연간 결제 시 100,000원</p>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-3 mb-10 grow border-t pt-6">
+                <li>✅ <b>외국인 관리 상담 1회</b></li>
+                <li>✅ 실시간 D-Day 대시보드</li>
+             
+            </ul>
+            <a href="index.html#contact" class="w-full py-3 border border-slate-200 rounded-xl font-bold text-center text-sm hover:bg-slate-50 transition">신청하기</a>
+        </div>
+
+        <div class="pricing-card p-8 rounded-[2rem]">
+            <div class="mb-6">
+                <span class="promo-tag">Standard</span>
+                <h3 class="text-xl font-bold mt-3">Standard</h3>
+                <p class="text-slate-400 text-xs mt-1">20인 이하 중소 규모 기업</p>
+            </div>
+            <div class="mb-8">
+                <span class="text-3xl font-black text-slate-900">월 33,000원</span>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-3 mb-10 grow border-t pt-6">
+                <li>✅ <b>외국인 관리 상담 1회</b></li>
+                <li>✅ 실시간 D-Day 대시보드</li>
+                <li>✅ 문자 또는 카카오톡으로 만료 알람 제공</li>
+            </ul>
+            <a href="index.html#contact" class="w-full py-3 border border-slate-200 rounded-xl font-bold text-center text-sm hover:bg-slate-50 transition">신청하기</a>
+        </div>
+
+        <div class="pricing-card p-8 rounded-[2rem] border-2 border-indigo-600 relative ring-8 ring-indigo-50">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase">Management</div>
+            <div class="mb-6">
+                <span class="promo-tag bg-indigo-600 text-white">업무 경감 특화</span>
+                <h3 class="text-xl font-bold mt-3 text-indigo-600">Business</h3>
+                <p class="text-slate-400 text-xs mt-1">21~50인 대시보드 관리 플랜</p>
+            </div>
+            <div class="mb-8">
+                <span class="text-3xl font-black text-slate-900 font-black text-slate-900">월 77,000원</span>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-3 mb-10 grow border-t pt-6">
+                <li class="font-bold text-indigo-600">✅ 최초 서류 1부 무료 대행</li>
+                <li class="font-bold">✅ 실시간 D-Day 대시보드</li>
+                <li>✅ 우선 순위 데이터 검토</li>
+                <li>✅ 문자 또는 카카오톡으로 만료 알람 제공</li>
+            </ul>
+            <a href="index.html#contact" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold text-center text-sm hover:bg-indigo-700 transition shadow-lg">무료 체험 신청하기</a>
+        </div>
+
+        <div class="pricing-card p-8 rounded-[2rem]">
+            <div class="mb-6">
+                <span class="promo-tag bg-slate-800 text-white">Full Care Service</span>
+                <h3 class="text-xl font-bold mt-3">Enterprise</h3>
+                <p class="text-slate-400 text-xs mt-1">50인 이상 또는 전담 관리</p>
+            </div>
+            <div class="mb-8">
+                <span class="text-3xl font-black text-slate-900 font-black text-slate-900">별도 협의</span>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-3 mb-10 grow border-t pt-6">
+                <li class="font-bold text-indigo-600 underline">✅ 전담 행정사 매칭</li>
+                <li>✅ 최초 서류 1부 무료 대행</li>
+                <li>✅ 무제한 인력 통합 관리 (최대100명)</li>
+                <li>✅ <b>추후 '셀프비자' 사이트 연계 할인</b></li>
+            </ul>
+            <a href="index.html#contact" class="w-full py-3 border border-slate-200 rounded-xl font-bold text-center text-sm hover:bg-slate-50 transition">별도 상담하기</a>
+        </div>
+    </div>
+
+    <section class="max-w-4xl mx-auto mt-20 p-10 bg-white rounded-3xl border border-slate-200 shadow-sm">
+        <h4 class="text-lg font-bold mb-6 text-slate-800">서류 작성 및 서비스 안내</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm leading-relaxed">
+            <div>
+                <p class="font-bold mb-2 text-indigo-600">[서류 작성 대행 비용]</p>
+                <ul class="space-y-1 text-slate-600">
+                    <li>• 일반 비자 연장 서류: <span class="fee-highlight">인당 PLAN</span> (VAT 별도)</li>
+                    <li>• E-7-4 비자 관련 서류: <span class="fee-highlight">인당 PLAN</span> (VAT 별도)</li>
+                    <li>• 모든 서류는 행정사 검인 후 PDF 또는 인쇄물로 제공됩니다.</li>
+                </ul>
+            </div>
+            <div>
+                <p class="font-bold mb-2 text-indigo-600">[이용 수칙]</p>
+                <ul class="space-y-1 text-slate-600">
+                    <li>• <b>방문 및 접수:</b> 출입국 방문 예약 및 실 방문은 <b>신청인(본인) 직접 수행</b> 원칙입니다.</li>
+                    <li>• 전문 행정사는 서류의 완벽한 준비와 법률적 검토를 책임집니다.</li>
+                    <li>• 대량 수임 또는 전담 대행 시 별도 견적을 요청하세요.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
