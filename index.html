@@ -16,6 +16,12 @@
         .form-input { width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #334155; font-size: 15px; }
         .form-input:focus { border-color: #4f46e5; outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
         .form-label { display: block; font-weight: 700; color: #475569; margin-bottom: 8px; font-size: 14px; }
+        .mobile-menu { display: none; position: fixed; top: 96px; left: 0; right: 0; background: white; border-bottom: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .mobile-menu.active { display: block; }
+        .hamburger span { display: block; width: 24px; height: 2px; background: #334155; margin: 5px 0; transition: all 0.3s; }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -6px); }
     </style>
 </head>
 <body>
@@ -36,9 +42,43 @@
                 <a href="#contact" class="hover:text-indigo-600 transition">상담신청</a>
             </div>
             
-            <a href="https://checkvisa.softr.app" class="px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-full hover:bg-indigo-700 transition shadow-md">인사담당자 전용 포털</a>
+            <a href="https://checkvisa.softr.app" class="hidden md:block px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-full hover:bg-indigo-700 transition shadow-md">인사담당자 전용 포털</a>
+            
+            <button id="mobile-menu-btn" class="md:hidden hamburger flex flex-col justify-center items-center w-10 h-10">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <div id="mobile-menu" class="mobile-menu">
+            <div class="px-6 py-4 space-y-4">
+                <a href="pricing.html" class="block py-3 text-center font-bold text-indigo-600 bg-indigo-50 rounded-xl">구독료 안내</a>
+                <a href="https://checkvisa.softr.app" class="block py-3 text-center font-bold text-white bg-indigo-600 rounded-xl">인사담당자 전용 포털</a>
+                <a href="#features" class="block py-2 text-slate-700 font-medium">핵심로직</a>
+                <a href="#risk" class="block py-2 text-slate-700 font-medium">리스크관리</a>
+                <a href="#contact" class="block py-2 text-slate-700 font-medium">상담신청</a>
+            </div>
         </div>
     </nav>
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+        
+        // Close menu when clicking on a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            });
+        });
+    </script>
 
     <header class="relative pt-48 pb-20 hero-gradient text-center">
         <div class="max-w-5xl mx-auto px-6">
