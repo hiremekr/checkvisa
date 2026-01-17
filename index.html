@@ -130,6 +130,9 @@
 
             <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-indigo-100">
                 <form action="https://formspree.io/f/meeenze" method="POST">
+                    <input type="hidden" name="_subject" value="Check Visa 무료 체험 신청">
+                    <input type="hidden" name="_next" value="https://checkvisa.pages.dev/">
+                    <input type="hidden" name="_captcha" value="false">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-left text-left">
                         <div>
                             <label class="form-label">성함</label>
@@ -137,7 +140,7 @@
                         </div>
                         <div>
                             <label class="form-label">연락처</label>
-                            <input type="text" name="tel" class="form-input" placeholder="연락처" required>
+                            <input type="tel" name="tel" class="form-input" placeholder="010-0000-0000" required pattern="[0-9-]+" inputmode="numeric">
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-left">
