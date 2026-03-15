@@ -542,10 +542,10 @@
                     <p class="text-slate-600 mb-4">
                         연장 서류를 직접 준비하고 제출할 수 있도록 단계별로 안내합니다.
                     </p>
-                    <button id="selfvisa-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition">
+                    <button id="selfvisa-btn" class="px-4 py-2 bg-slate-400 text-white rounded-lg font-bold cursor-not-allowed opacity-70" disabled>
                         셀프비자 바로가기
                     </button>
-                    <span class="inline-block px-3 py-1 bg-slate-200 text-slate-700 text-sm font-bold rounded-full ml-2">
+                    <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-bold rounded-full ml-2">
                         🚧 준비 중
                     </span>
                 </div>
@@ -584,8 +584,9 @@
                     <p class="text-slate-600 mb-6">
                         연장 서류를 직접 준비하고 출입국·외국인청에 직접 신청
                     </p>
-                    <button id="selfvisa-btn-2" class="w-full py-4 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition">
+                    <button id="selfvisa-btn-2" class="w-full py-4 bg-slate-400 text-white rounded-lg font-bold cursor-not-allowed opacity-70 relative" disabled>
                         셀프비자 바로가기
+                        <span class="absolute top-2 right-2 px-2 py-1 bg-yellow-400 text-yellow-900 text-xs font-bold rounded">준비중</span>
                     </button>
                 </div>
                 
@@ -841,14 +842,31 @@
             }
         });
         
-        // 셀프비자 버튼 (SelfVisa 페이지로 이동)
-        document.getElementById('selfvisa-btn').addEventListener('click', function() {
-            window.location.href = '/selfvisa/';
-        });
+        // 셀프비자 버튼 (준비 중 메시지)
+        const selfvisaBtn1 = document.getElementById('selfvisa-btn');
+        const selfvisaBtn2 = document.getElementById('selfvisa-btn-2');
         
-        document.getElementById('selfvisa-btn-2').addEventListener('click', function() {
-            window.location.href = '/selfvisa/';
-        });
+        if (selfvisaBtn1) {
+            selfvisaBtn1.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                alert('🚧 셀프비자 서비스는 현재 준비 중입니다.\n\n곧 오픈 예정이니 조금만 기다려주세요! 😊');
+            });
+            
+            // disabled 버튼도 클릭 가능하도록
+            selfvisaBtn1.style.pointerEvents = 'auto';
+        }
+        
+        if (selfvisaBtn2) {
+            selfvisaBtn2.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                alert('🚧 셀프비자 서비스는 현재 준비 중입니다.\n\n곧 오픈 예정이니 조금만 기다려주세요! 😊');
+            });
+            
+            // disabled 버튼도 클릭 가능하도록
+            selfvisaBtn2.style.pointerEvents = 'auto';
+        }
         
         // SelfVisa 페이지로 이동
         function goToSelfVisa() {
