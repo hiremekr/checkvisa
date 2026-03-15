@@ -16,12 +16,11 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Python 패키지 복사 및 설치
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# 애플리케이션 파일 복사
+# 모든 파일 먼저 복사
 COPY . .
+
+# Python 패키지 설치
+RUN pip install --no-cache-dir -r requirements.txt
 
 # 포트 설정
 EXPOSE 5000
