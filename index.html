@@ -106,10 +106,22 @@
             position: relative;
         }
         .hidden { display: none !important; }
-        .d-day-color-green { color: #10B981; }
-        .d-day-color-orange { color: #F59E0B; }
-        .d-day-color-red { color: #EF4444; }
-        .d-day-color-darkred { color: #DC2626; }
+        .d-day-color-green { 
+            color: #059669; 
+            text-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
+        }
+        .d-day-color-orange { 
+            color: #D97706; 
+            text-shadow: 0 2px 8px rgba(217, 119, 6, 0.2);
+        }
+        .d-day-color-red { 
+            color: #DC2626; 
+            text-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+        }
+        .d-day-color-darkred { 
+            color: #B91C1C; 
+            text-shadow: 0 2px 8px rgba(185, 28, 28, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -289,9 +301,11 @@
             <!-- STEP 3: 계산 결과 (초기에는 숨김) -->
             <div id="result-section" class="hidden">
                 <!-- D-Day 숫자 카드 -->
-                <div class="card p-8 text-center mb-6">
-                    <div id="d-day-number" class="text-7xl font-black mb-4">D-XXX</div>
-                    <div id="expiry-date-display" class="text-xl text-slate-600"></div>
+                <div class="card p-8 md:p-12 text-center mb-6" style="background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);">
+                    <p class="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wider">체류 기간 남은 일수</p>
+                    <div id="d-day-number" class="text-6xl md:text-8xl font-black mb-6" style="line-height: 1; letter-spacing: -0.02em;">D-XXX</div>
+                    <div class="h-px bg-slate-200 w-32 mx-auto mb-4"></div>
+                    <div id="expiry-date-display" class="text-base md:text-lg text-slate-600 font-medium"></div>
                 </div>
                 
                 <!-- 주요 날짜 테이블 -->
@@ -734,19 +748,20 @@
             
             // D-Day 숫자 표시
             const ddayEl = document.getElementById('d-day-number');
+            const baseClass = 'text-6xl md:text-8xl font-black mb-6';
             if (dday < 0) {
                 ddayEl.textContent = '만료됨';
-                ddayEl.className = 'd-day-color-darkred';
+                ddayEl.className = baseClass + ' d-day-color-darkred';
             } else {
                 ddayEl.textContent = `D-${dday}`;
                 if (dday >= 90) {
-                    ddayEl.className = 'd-day-color-green';
+                    ddayEl.className = baseClass + ' d-day-color-green';
                 } else if (dday >= 60) {
-                    ddayEl.className = 'd-day-color-orange';
+                    ddayEl.className = baseClass + ' d-day-color-orange';
                 } else if (dday >= 30) {
-                    ddayEl.className = 'd-day-color-red';
+                    ddayEl.className = baseClass + ' d-day-color-red';
                 } else {
-                    ddayEl.className = 'd-day-color-darkred';
+                    ddayEl.className = baseClass + ' d-day-color-darkred';
                 }
             }
             
