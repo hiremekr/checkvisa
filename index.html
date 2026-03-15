@@ -3,28 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check Visa | 기업용 외국인 비자 통합 관리 솔루션</title>
+    <title>CHECK VISA | 비자 D-Day 계산기</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+KR:wght@300;500;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #f8fafc; color: #334155; overflow-x: hidden; scroll-behavior: smooth; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
-        .hero-gradient { background: radial-gradient(circle at 50% -20%, #e2e8f0 0%, #f8fafc 100%); }
-        .bento-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; }
-        .bento-card:hover { transform: translateY(-5px); border-color: #4f46e5; }
-        .risk-text { color: #dc2626; font-weight: 700; }
-        .form-input { width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #334155; font-size: 15px; }
-        .form-input:focus { border-color: #4f46e5; outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-        .form-label { display: block; font-weight: 700; color: #475569; margin-bottom: 8px; font-size: 14px; }
-        .mobile-menu { display: none; position: fixed; top: 96px; left: 0; right: 0; background: white; border-bottom: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .mobile-menu.active { display: block; }
-        .hamburger span { display: block; width: 24px; height: 2px; background: #334155; margin: 5px 0; transition: all 0.3s; }
-        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-        .hamburger.active span:nth-child(2) { opacity: 0; }
-        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -6px); }
+        body { 
+            font-family: 'Inter', 'Noto Sans KR', sans-serif; 
+            background-color: #EEF2FF; 
+            color: #1E3A5F; 
+            scroll-behavior: smooth; 
+        }
+        .glass { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8); 
+        }
+        .card { 
+            background: #ffffff; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+        }
+        .btn-primary { 
+            background: #4F46E5; 
+            color: white; 
+            padding: 16px 32px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            transition: all 0.3s; 
+        }
+        .btn-primary:hover { 
+            background: #4338CA; 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); 
+        }
+        .btn-secondary { 
+            background: white; 
+            color: #4F46E5; 
+            border: 2px solid #4F46E5; 
+            padding: 16px 32px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            transition: all 0.3s; 
+        }
+        .btn-secondary:hover { 
+            background: #EEF2FF; 
+        }
+        .mobile-menu { 
+            display: none; 
+            position: fixed; 
+            top: 96px; 
+            left: 0; 
+            right: 0; 
+            background: white; 
+            border-bottom: 1px solid #e2e8f0; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
+            z-index: 40; 
+        }
+        .mobile-menu.active { 
+            display: block; 
+        }
+        .hamburger span { 
+            display: block; 
+            width: 24px; 
+            height: 2px; 
+            background: #334155; 
+            margin: 5px 0; 
+            transition: all 0.3s; 
+        }
+        .hamburger.active span:nth-child(1) { 
+            transform: rotate(45deg) translate(5px, 5px); 
+        }
+        .hamburger.active span:nth-child(2) { 
+            opacity: 0; 
+        }
+        .hamburger.active span:nth-child(3) { 
+            transform: rotate(-45deg) translate(7px, -6px); 
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .hidden { display: none !important; }
+        .d-day-color-green { color: #10B981; }
+        .d-day-color-orange { color: #F59E0B; }
+        .d-day-color-red { color: #EF4444; }
+        .d-day-color-darkred { color: #DC2626; }
     </style>
 </head>
 <body>
+    <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 glass">
         <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition cursor-pointer">
@@ -36,13 +125,13 @@
             </a>
             
             <div class="hidden md:flex gap-8 text-sm font-medium text-slate-600">
-                <a href="#features" class="hover:text-indigo-600 transition">핵심로직</a>
-                <a href="#risk" class="hover:text-red-600 transition font-bold">리스크관리</a>
-                <a href="pricing.html" class="hover:text-indigo-600 transition font-black text-indigo-600 underline underline-offset-4">구독료 안내</a>
-                <a href="#contact" class="hover:text-indigo-600 transition">상담신청</a>
+                <a href="#calculator" class="hover:text-indigo-600 transition">D-Day 계산기</a>
+                <a href="#services" class="hover:text-indigo-600 transition">서비스 안내</a>
+                <a href="business.html" class="hover:text-indigo-600 transition">기업 서비스</a>
+                <a href="https://hireme.kr" target="_blank" class="hover:text-indigo-600 transition">HireMe</a>
             </div>
             
-            <a href="https://checkvisa.softr.app" class="hidden md:block px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-full hover:bg-indigo-700 transition shadow-md">인사담당자 전용 포털</a>
+            <a href="business.html" class="hidden md:block px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-full hover:bg-indigo-700 transition shadow-md">🏢 기업 서비스</a>
             
             <button id="mobile-menu-btn" class="md:hidden hamburger flex flex-col justify-center items-center w-10 h-10">
                 <span></span>
@@ -53,11 +142,10 @@
         
         <div id="mobile-menu" class="mobile-menu">
             <div class="px-6 py-4 space-y-4">
-                <a href="pricing.html" class="block py-3 text-center font-bold text-indigo-600 bg-indigo-50 rounded-xl">구독료 안내</a>
-                <a href="https://checkvisa.softr.app" class="block py-3 text-center font-bold text-white bg-indigo-600 rounded-xl">인사담당자 전용 포털</a>
-                <a href="#features" class="block py-2 text-slate-700 font-medium">핵심로직</a>
-                <a href="#risk" class="block py-2 text-slate-700 font-medium">리스크관리</a>
-                <a href="#contact" class="block py-2 text-slate-700 font-medium">상담신청</a>
+                <a href="business.html" class="block py-3 text-center font-bold text-white bg-indigo-600 rounded-xl">🏢 기업 서비스</a>
+                <a href="#calculator" class="block py-2 text-slate-700 font-medium">D-Day 계산기</a>
+                <a href="#services" class="block py-2 text-slate-700 font-medium">서비스 안내</a>
+                <a href="https://hireme.kr" target="_blank" class="block py-2 text-slate-700 font-medium">HireMe</a>
             </div>
         </div>
     </nav>
@@ -71,7 +159,6 @@
             mobileMenu.classList.toggle('active');
         });
         
-        // Close menu when clicking on a link
         mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenuBtn.classList.remove('active');
@@ -80,156 +167,684 @@
         });
     </script>
 
-    <header class="relative pt-48 pb-20 hero-gradient text-center">
-        <div class="max-w-5xl mx-auto px-6">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 border border-red-100 text-xs font-bold text-red-600 mb-8 shadow-sm">
-                🎉 신규 가입 혜택: 프로모션기간 무료체험 혜택
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-6" style="background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);">
+        <div class="max-w-5xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-indigo-200 text-sm font-bold text-indigo-600 mb-8 shadow-sm">
+                🆓 무료 서비스 · 지금 바로 확인하세요
             </div>
-            <h1 class="text-4xl md:text-7xl font-black tracking-tight mb-8 leading-[1.2] text-slate-900">
-                <span class="block">비자 관리의 책임,</span>
-                <span class="block text-[0.95em]"><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500">✨ 전문가와 함께 ✨</span></span>
+            
+            <h1 class="text-4xl md:text-6xl font-black tracking-tight mb-6 leading-tight text-slate-900">
+                내 체류기간,<br>
+                지금 몇 일 남았나요?
             </h1>
-            <p class="text-base md:text-xl text-slate-600 max-w-2xl mx-auto mb-12 font-light leading-relaxed">
-                <span class="block md:inline">VISA 전문 행정사가 실시간으로 체류상태를 </span>
-                <span class="block md:inline">직접 검토하고 관리합니다. </span>
-                <br class="hidden md:block" />
-                <span class="block md:inline">회사별 전용 포털에서 모든 근로자의 </span>
-                <span class="block md:inline">비자현황을 안전하게 관리하세요.</span>
+            
+            <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-12 leading-relaxed">
+                비자 만료일을 입력하면 D-Day와 연장 신청 가능일을 바로 알려드립니다.<br>
+                비자 종류에 따른 맞춤 안내도 함께 제공합니다.
             </p>
-            <div class="mb-20">
-                <a href="#contact" class="px-10 py-5 bg-indigo-600 rounded-2xl font-bold text-xl hover:bg-indigo-700 transition shadow-xl text-white">전문가 도입 상담</a>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center mb-16">
+                <a href="#calculator" class="btn-primary inline-block">
+                    📅 D-Day 계산하기
+                </a>
+                <a href="#alert-signup" class="btn-secondary inline-block">
+                    🔔 만료 알림 신청
+                </a>
             </div>
-
-            <div class="relative max-w-5xl mx-auto bg-white rounded-3xl p-4 border border-slate-200 shadow-2xl">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl">
-                    <div class="bg-white p-6 rounded-2xl text-left border border-slate-200">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">E-7-4</span>
-                        <h3 class="text-lg font-bold text-slate-800">NGUYEN VAN A</h3>
-                        <p class="text-2xl font-black text-indigo-600">D-542</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl text-left border-2 border-indigo-500 ring-4 ring-indigo-50">
-                        <span class="text-[10px] font-bold text-orange-500 uppercase">🚨 조회필요</span>
-                        <h3 class="text-lg font-bold text-slate-800">KHAN MOHAMMAD</h3>
-                        <p class="text-2xl font-black text-orange-600 font-black">D-43</p>
-                        <div class="mt-4 w-full py-2 bg-indigo-600 rounded-lg text-center text-[10px] font-bold text-white">전문가 검토 요청</div>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl text-left border border-slate-200">
-                        <span class="text-[10px] font-bold text-red-500 uppercase">🚨 만료임박</span>
-                        <h3 class="text-lg font-bold text-slate-800">JASON PARK</h3>
-                        <p class="text-2xl font-black text-red-600">D-15</p>
-                    </div>
+            
+            <div class="flex flex-wrap justify-center gap-6 text-sm text-slate-600">
+                <div class="flex items-center gap-2">
+                    <span>✅</span>
+                    <span>완전 무료 서비스</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span>🔔</span>
+                    <span>카카오 알림톡 자동 발송</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span>🛡️</span>
+                    <span>행정사 검증 정보</span>
                 </div>
             </div>
         </div>
-    </header>
+    </section>
 
-    <section id="risk" class="py-24 bg-red-50">
-        <div class="max-w-5xl mx-auto px-6 text-center">
-            <h2 class="text-3xl md:text-4xl font-black mb-6">
-                <span class="block md:inline">비자 관리 실수,</span> 
-                <span class="risk-text text-red-600">다음 기회는 없습니다.</span>
+    <!-- D-Day Calculator Section -->
+    <section id="calculator" class="py-20 px-6 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black text-center mb-12 text-slate-900">
+                🗓️ 비자 D-Day 계산기
             </h2>
-            <p class="text-lg md:text-xl text-slate-700 mb-12 font-light">
-                <span class="block md:inline">체류 기간 연장, 단 하루만 지체되어도</span>
-                <span class="block md:inline"><span class="risk-text">출입국관리법 위반</span>의</span>
-                <span class="block md:inline">무거운 책임이 따릅니다.</span>
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="p-8 bento-card rounded-3xl">
-                    <h4 class="font-bold mb-2 text-slate-800 text-lg text-lg">법적 처벌 리스크</h4>
-                    <p class="text-sm text-slate-600">만료일 도과 시 근로자는 불법 체류자가 되며, 기업은 즉각적인 법적 책임을 집니다.</p>
+            
+            <div class="card p-8 md:p-12 mb-8">
+                <!-- STEP 1: 비자 종류 선택 -->
+                <div class="mb-8">
+                    <label class="block text-lg font-bold text-slate-900 mb-4">
+                        STEP 1. 비자 종류를 선택하세요
+                    </label>
+                    <select id="visa-type" class="w-full p-4 border-2 border-slate-300 rounded-lg text-base focus:border-indigo-600 focus:outline-none">
+                        <option value="">선택해주세요</option>
+                        <optgroup label="취업비자">
+                            <option value="E-1">E-1 (교수)</option>
+                            <option value="E-2">E-2 (회화지도)</option>
+                            <option value="E-3">E-3 (연구)</option>
+                            <option value="E-4">E-4 (기술지도)</option>
+                            <option value="E-5">E-5 (전문직업)</option>
+                            <option value="E-6">E-6 (예술흥행)</option>
+                            <option value="E-7">E-7 (특정활동)</option>
+                            <option value="E-8">E-8 (계절근로)</option>
+                            <option value="E-9">E-9 (비전문취업)</option>
+                            <option value="E-10">E-10 (선원취업)</option>
+                        </optgroup>
+                        <optgroup label="거주/결혼">
+                            <option value="F-1">F-1 (방문동거)</option>
+                            <option value="F-2">F-2 (거주)</option>
+                            <option value="F-3">F-3 (동반)</option>
+                            <option value="F-4">F-4 (재외동포)</option>
+                            <option value="F-5">F-5 (영주)</option>
+                            <option value="F-6">F-6 (결혼이민)</option>
+                        </optgroup>
+                        <optgroup label="방문/관광">
+                            <option value="B-1">B-1 (사증면제)</option>
+                            <option value="B-2">B-2 (관광통과)</option>
+                            <option value="C-3">C-3 (단기방문)</option>
+                        </optgroup>
+                        <optgroup label="유학">
+                            <option value="D-2">D-2 (유학)</option>
+                            <option value="D-4">D-4 (일반연수)</option>
+                        </optgroup>
+                        <optgroup label="기타">
+                            <option value="D-1">D-1 (문화예술)</option>
+                            <option value="D-3">D-3 (기업투자)</option>
+                            <option value="D-5">D-5 (취재)</option>
+                            <option value="D-6">D-6 (종교)</option>
+                            <option value="D-7">D-7 (주재)</option>
+                            <option value="D-8">D-8 (기업투자)</option>
+                            <option value="D-9">D-9 (무역경영)</option>
+                            <option value="D-10">D-10 (구직)</option>
+                            <option value="G-1">G-1 (기타)</option>
+                            <option value="H-1">H-1 (관광취업)</option>
+                            <option value="H-2">H-2 (방문취업)</option>
+                        </optgroup>
+                    </select>
+                    <p id="visa-desc" class="mt-2 text-sm text-slate-500"></p>
                 </div>
-                <div class="p-8 bento-card rounded-3xl">
-                    <h4 class="font-bold mb-2 text-slate-800 text-lg">과중한 범칙금</h4>
-                    <p class="text-sm text-slate-600">불법 고용 및 체류 기록은 기업과 근로자 양측에 상당한 금액의 범칙금을 발생시킵니다.</p>
+                
+                <!-- STEP 2: 체류 만료일 입력 -->
+                <div class="mb-8">
+                    <label class="block text-lg font-bold text-slate-900 mb-4">
+                        STEP 2. 체류 만료일을 입력하세요
+                    </label>
+                    <input type="date" id="expiry-date" class="w-full p-4 border-2 border-slate-300 rounded-lg text-base focus:border-indigo-600 focus:outline-none">
                 </div>
-                <div class="p-8 bento-card rounded-3xl">
-                    <h4 class="font-bold mb-2 text-slate-800 text-lg">기업 고용 제한</h4>
-                    <p class="text-sm text-slate-600">관리 소홀 기록은 향후 외국인력 배정 및 고용 허가 시 중대한 감점 사유가 됩니다.</p>
+                
+                <button id="calc-btn" class="w-full btn-primary" style="height: 52px;">
+                    📅 D-Day 계산하기
+                </button>
+            </div>
+            
+            <!-- STEP 3: 계산 결과 (초기에는 숨김) -->
+            <div id="result-section" class="hidden">
+                <!-- D-Day 숫자 카드 -->
+                <div class="card p-8 text-center mb-6">
+                    <div id="d-day-number" class="text-7xl font-black mb-4">D-XXX</div>
+                    <div id="expiry-date-display" class="text-xl text-slate-600"></div>
+                </div>
+                
+                <!-- 주요 날짜 테이블 -->
+                <div class="card p-6 mb-6 overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b-2 border-slate-200">
+                                <th class="py-3 px-4 font-bold text-slate-900">구분</th>
+                                <th class="py-3 px-4 font-bold text-slate-900">날짜</th>
+                                <th class="py-3 px-4 font-bold text-slate-900 text-center">상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="date-table-body">
+                            <!-- JavaScript로 동적 생성 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 연장 가능일 안내 배너 -->
+                <div id="extension-banner" class="p-4 mb-6 rounded-lg" style="background: #EEF2FF; border-left: 4px solid #4F46E5;">
+                    <p class="font-bold text-slate-900 mb-2" id="extension-date-text"></p>
+                    <p class="text-sm text-slate-600">
+                        ※ 단, 본인의 비자 종류에 따라 연장이 불가능할 수 있습니다. 아래 비자별 안내를 반드시 확인하세요.
+                    </p>
+                </div>
+                
+                <!-- 비자별 조건부 메시지 카드 -->
+                <div id="visa-message-e9" class="hidden card p-6 mb-4" style="background: #FFFBEB; border: 1px solid #F59E0B;">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3">⚠️ E-9 비자 연장 주의사항</h3>
+                    <ul class="space-y-2 text-slate-700">
+                        <li>• E-9 비자는 최초 3년 체류 후, 1년 10개월 연장이 1회 가능합니다.</li>
+                        <li>• 1년 10개월 연장 완료 후에는 추가 연장이 불가합니다.</li>
+                        <li>• ❗ 취업활동기간 연장 허가는 반드시 D-7(만료 최소 2주 전)까지 고용센터에서 받아야 합니다.</li>
+                    </ul>
+                    <div class="mt-4 p-4 rounded-lg" style="background: #EFF6FF; border: 1px solid #3B82F6;">
+                        <p class="font-bold text-slate-900 mb-2">💡 E-7-4(숙련기능인력) 비자로 전환을 고려해보세요</p>
+                        <a href="https://hireme.kr" target="_blank" class="inline-block mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition">
+                            HireMe에서 새 직장 찾기
+                        </a>
+                    </div>
+                </div>
+                
+                <div id="visa-message-e8" class="hidden card p-6 mb-4" style="background: #FEF2F2; border: 1px solid #EF4444;">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3">🚫 E-8 비자는 연장이 불가합니다</h3>
+                    <p class="text-slate-700">만료 전 반드시 출국하거나 다른 비자로 변경하세요.</p>
+                </div>
+                
+                <div id="visa-message-h1" class="hidden card p-6 mb-4" style="background: #FEF2F2; border: 1px solid #EF4444;">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3">🚫 H-1(관광취업/워킹홀리데이) 비자는 연장이 불가합니다</h3>
+                    <p class="text-slate-700">만료 전 출국 또는 재신청이 필요합니다.</p>
+                </div>
+                
+                <div id="visa-message-h2" class="hidden card p-6 mb-4" style="background: #FFFBEB; border: 1px solid #F59E0B;">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3">⚠️ H-2(방문취업) 비자는 최대 4년 10개월까지 체류 가능합니다</h3>
+                    <p class="text-slate-700">누적 체류기간을 반드시 확인하세요.</p>
+                </div>
+                
+                <div id="visa-message-f5" class="hidden card p-6 mb-4" style="background: #F0FDF4; border: 1px solid #22C55E;">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3">✅ F-5(영주권) 비자는 체류기간 제한이 없습니다</h3>
+                    <p class="text-slate-700">거소증(외국인등록증) 유효기간만 갱신하면 됩니다.</p>
+                </div>
+                
+                <div id="visa-message-default" class="hidden card p-6 mb-4" style="background: #EFF6FF; border: 1px solid #3B82F6;">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3">ℹ️ 일반적으로 만료 4개월 전부터 연장 신청이 가능합니다</h3>
+                    <p class="text-slate-700">정확한 연장 요건은 출입국·외국인청에서 확인하세요.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="features" class="py-32 px-6 bg-white">
-        <div class="max-w-5xl mx-auto">
-            <h2 class="text-4xl font-black mb-16 text-center">행정사 검증 기반의<br>연속적 관리 시스템</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-2 p-10 rounded-[2.5rem] bento-card relative overflow-hidden group">
-                    <div class="relative z-10">
-                        <h3 class="text-3xl font-bold mb-4">✅ 체계적인 업데이트</h3>
-                        <p class="text-slate-600 leading-relaxed max-w-md">연장 신고 후 포털에서 '검토 요청'을 클릭하세요. 행정사가 공식 데이터를 대조 확인한 후 시스템 만료일을 자동 갱신하여 관리의 연속성을 보장합니다.</p>
+    <!-- CTA 알림 신청 섹션 -->
+    <section id="alert-signup" class="py-20 px-6" style="background: #F8FAFC;">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black text-center mb-4 text-slate-900">
+                만료일이 다가오기 전에 미리 알림을 받으세요
+            </h2>
+            <p class="text-center text-slate-600 mb-12">완전 무료로 카카오 알림톡을 받아보세요</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 카드 1: 체크비자 가입하기 -->
+                <div class="card p-8" style="background: #4F46E5; color: white;">
+                    <div class="text-5xl mb-4">🔔</div>
+                    <h3 class="text-2xl font-bold mb-4">체크비자 D-Day 알림 신청</h3>
+                    <div class="mb-6 space-y-2">
+                        <p class="font-bold">✉️ 이메일로 가입하면:</p>
+                        <ul class="space-y-1 text-sm">
+                            <li>• D-90일 전 카카오 알림톡 자동 발송</li>
+                            <li>• D-60일 전 카카오 알림톡 자동 발송</li>
+                            <li>• D-30일 전 카카오 알림톡 자동 발송</li>
+                            <li>• 체류 만료 전 연장 서류 안내 알림 포함</li>
+                        </ul>
+                        <p class="font-bold mt-4">🎁 완전 무료 서비스</p>
                     </div>
-                    <div class="absolute right-[-10%] bottom-[-10%] w-64 h-64 bg-indigo-100/60 blur-3xl"></div>
+                    <button id="open-modal-btn" class="w-full py-4 bg-white text-indigo-600 rounded-lg font-bold hover:bg-slate-50 transition">
+                        지금 무료로 가입하기 →
+                    </button>
                 </div>
-                <div class="p-10 rounded-[2.5rem] bento-card flex flex-col justify-between">
-                    <div class="text-4xl mb-6">💼</div>
+                
+                <!-- 카드 2: 카카오톡 채널 추가 -->
+                <div class="card p-8" style="background: #FEE500; color: #1A1A1A;">
+                    <div class="text-5xl mb-4">💬</div>
+                    <h3 class="text-2xl font-bold mb-4">카카오톡 채널 추가</h3>
+                    <div class="mb-6 space-y-2">
+                        <p class="font-bold">카카오톡 채널을 추가하면:</p>
+                        <ul class="space-y-1 text-sm">
+                            <li>• 최신 비자 정책 변경 뉴스</li>
+                            <li>• 취업비자 관련 공지사항</li>
+                            <li>• 연장 절차 안내 및 팁</li>
+                            <li>• 비자 관련 유용한 정보 수신</li>
+                        </ul>
+                        <p class="font-bold mt-4">🎁 채널 구독 완전 무료</p>
+                    </div>
+                    <a href="https://pf.kakao.com/_pPxnFxj/friend" target="_blank" class="block w-full py-4 bg-white text-black text-center rounded-lg font-bold hover:bg-slate-50 transition">
+                        카카오톡 채널 추가하기 →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 알림 신청 모달 -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-2xl text-slate-400 hover:text-slate-600">×</button>
+            
+            <h2 class="text-2xl font-black mb-2 text-slate-900">📱 체크비자 D-Day 알림 신청</h2>
+            <p class="text-slate-600 mb-6">가입 후 카카오 알림톡으로 D-90, D-60, D-30일에 자동 알림을 보내드립니다.</p>
+            
+            <div class="p-4 rounded-lg mb-6" style="background: #EFF6FF; border: 1px solid #3B82F6;">
+                <p class="text-sm text-slate-700">📲 카카오 알림톡으로 D-90, D-60, D-30일 전에 자동 알림을 발송해 드립니다.</p>
+            </div>
+            
+            <form action="https://formspree.io/f/meeeenze" method="POST">
+                <input type="hidden" name="_subject" value="CHECK VISA D-Day 알림 신청">
+                <input type="hidden" name="_next" value="https://checkvisa.co.kr/thank-you.html">
+                <input type="hidden" name="_captcha" value="false">
+                
+                <div class="space-y-4">
                     <div>
-                        <h3 class="text-xl font-bold mb-2 text-slate-800">인사담당자 전용 포털</h3>
-                        <p class="text-slate-600 text-sm">회사별 독립 포털을 통해 여러 근로자의 비자 상태를 우선순위에 따라 실시간 파악하세요.</p>
+                        <label class="block text-sm font-bold text-slate-900 mb-2">성명 <span class="text-red-600">*</span></label>
+                        <input type="text" name="name" required class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none">
                     </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-slate-900 mb-2">여권번호 <span class="text-red-600">*</span></label>
+                        <input type="text" name="passport" required class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="M12345678">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-slate-900 mb-2">전화번호 <span class="text-red-600">*</span></label>
+                        <input type="tel" name="phone" required class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="010-0000-0000">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-slate-900 mb-2">비자 종류 <span class="text-red-600">*</span></label>
+                        <input type="text" id="modal-visa-type" name="visa_type" required readonly class="w-full p-3 border-2 border-slate-300 rounded-lg bg-slate-50">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-slate-900 mb-2">체류 만료일 <span class="text-red-600">*</span></label>
+                        <input type="date" id="modal-expiry-date" name="expiry_date" required class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-slate-900 mb-2">근무처</label>
+                        <input type="text" name="workplace" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="선택사항">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-slate-900 mb-2">주소지</label>
+                        <input type="text" name="address" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="선택사항">
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full mt-6 btn-primary" style="height: 52px;">
+                    ✅ 알림 신청 완료하기
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- HireMe 배너 섹션 -->
+    <section class="py-20 px-6 text-white text-center" style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black mb-4">
+                취업처 변경 또는 비자 변경을 위한<br class="md:hidden"> 새 직장이 필요한가요?
+            </h2>
+            <p class="text-xl mb-8 opacity-90">
+                HireMe에서 외국인 채용 전문 기업을 찾아보세요
+            </p>
+            <a href="https://hireme.kr" target="_blank" class="inline-block px-8 py-4 bg-white text-indigo-600 rounded-xl font-bold hover:bg-slate-50 transition shadow-lg">
+                📝 이력서 작성 신청하러 가기
+            </a>
+        </div>
+    </section>
+
+    <!-- 서비스 소개 섹션 -->
+    <section id="services" class="py-20 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black text-center mb-4 text-slate-900">
+                CheckVisa가 제공하는 서비스
+            </h2>
+            <p class="text-center text-slate-600 mb-12">외국인 근로자와 기업을 위한 비자 관리 솔루션</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 카드 1 -->
+                <div class="card p-8">
+                    <div class="text-5xl mb-4">🗓️</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-3">D-Day 계산기 (현재 무료)</h3>
+                    <p class="text-slate-600 mb-4">
+                        비자 만료일을 입력하면 연장 가능일, D-90/60/30 알림 날짜를 자동 계산해드립니다.
+                    </p>
+                    <span class="inline-block px-3 py-1 bg-green-100 text-green-700 text-sm font-bold rounded-full">
+                        ✅ 무료 서비스
+                    </span>
+                </div>
+                
+                <!-- 카드 2 -->
+                <div class="card p-8">
+                    <div class="text-5xl mb-4">🔔</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-3">카카오 알림톡 서비스 (개인용)</h3>
+                    <p class="text-slate-600 mb-4">
+                        D-90, D-60, D-30일 전에 자동으로 카카오 알림톡을 발송합니다. 만료일을 잊을 걱정이 없습니다.
+                    </p>
+                    <span class="inline-block px-3 py-1 bg-green-100 text-green-700 text-sm font-bold rounded-full">
+                        ✅ 무료 서비스
+                    </span>
+                </div>
+                
+                <!-- 카드 3 -->
+                <div class="card p-8">
+                    <div class="text-5xl mb-4">💻</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-3">SelfVisa – 직접 연장 (준비중)</h3>
+                    <p class="text-slate-600 mb-4">
+                        연장 서류를 직접 준비하고 제출할 수 있도록 단계별로 안내합니다.
+                    </p>
+                    <button id="selfvisa-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition">
+                        셀프비자 바로가기
+                    </button>
+                    <span class="inline-block px-3 py-1 bg-slate-200 text-slate-700 text-sm font-bold rounded-full ml-2">
+                        🚧 준비 중
+                    </span>
+                </div>
+                
+                <!-- 카드 4 -->
+                <div class="card p-8">
+                    <div class="text-5xl mb-4">🏢</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-3">기업용 비자 관리 솔루션</h3>
+                    <p class="text-slate-600 mb-4">
+                        외국인 직원의 비자를 체계적으로 관리하는 기업 전용 서비스입니다.
+                    </p>
+                    <a href="business.html" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition">
+                        기업 서비스 알아보기
+                    </a>
+                    <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-sm font-bold rounded-full ml-2">
+                        🏢 기업 전용
+                    </span>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="contact" class="py-32 bg-indigo-50">
-        <div class="max-w-5xl mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl font-black mb-4 tracking-tight text-slate-900"><span class="block md:inline">비자 관리 도입</span> <span class="block md:inline">무료상담 신청</span></h2>
-                <p class="text-slate-600">온라인 비공개상담으로 편리하게 관리 시스템 도입을 문의하시기 바랍니다.</p>
-            </div>
-
-            <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-indigo-100">
-                <form action="https://formspree.io/f/meeeenze" method="POST">
-                    <input type="hidden" name="_subject" value="Check Visa 무료 체험 신청">
-                    <input type="hidden" name="_next" value="https://checkvisa.co.kr/thank-you.html">
-                    <input type="hidden" name="_captcha" value="false">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-left text-left">
-                        <div>
-                            <label class="form-label">성함</label>
-                            <input type="text" name="name" class="form-input" placeholder="성함/담당자명" required>
-                        </div>
-                        <div>
-                            <label class="form-label">연락처</label>
-                            <input type="tel" name="tel" class="form-input" placeholder="010-0000-0000" required pattern="[0-9-]+" inputmode="numeric">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-left">
-                        <div>
-                            <label class="form-label">회사/지역</label>
-                            <input type="text" name="company" class="form-input" placeholder="회사명 및 지역" required>
-                        </div>
-                        <div>
-                            <label class="form-label">상담분야</label>
-                            <select name="category" class="form-input">
-                                <option>신규 시스템 도입 상담</option>
-                                <option>비자 업무 통합 대행</option>
-                                <option>관리 시스템 유지 보수</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-8 text-left">
-                        <label class="form-label">상담내용</label>
-                        <textarea name="message" class="form-input h-32 resize-none" placeholder="문의하실 내용을 입력해 주세요."></textarea>
-                    </div>
-                    <div class="flex items-center justify-center gap-2 mb-10 text-xs text-slate-500">
-                        <input type="checkbox" id="privacy" class="w-4 h-4 rounded border-slate-300 text-indigo-600" required>
-                        <label for="privacy">개인정보 수집 및 활용동의 <span class="underline ml-1 cursor-pointer">자세히보기</span></label>
-                    </div>
-                    <button type="submit" class="w-full py-5 bg-indigo-600 rounded-2xl font-black text-xl text-white shadow-lg hover:bg-indigo-700 transition">무료 체험 신청하기</button>
-                </form>
+    <!-- 연장 도움 섹션 -->
+    <section class="py-20 px-6" style="background: #F8FAFC;">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black text-center mb-12 text-slate-900">
+                비자 연장, 어떻게 진행하시겠어요?
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 카드 A: 셀프비자 -->
+                <div class="card p-8">
+                    <div class="text-5xl mb-4">💻</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-3">셀프비자로 직접 연장</h3>
+                    <p class="text-slate-600 mb-6">
+                        연장 서류를 직접 준비하고 출입국·외국인청에 직접 신청<br>
+                        <span class="font-bold text-indigo-600">약 2-5만원</span>
+                    </p>
+                    <button id="selfvisa-btn-2" class="w-full py-4 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition">
+                        셀프비자 바로가기
+                    </button>
+                </div>
+                
+                <!-- 카드 B: 행정사 대행 -->
+                <div class="card p-8">
+                    <div class="text-5xl mb-4">🏢</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-3">전문 행정사 연장 대행</h3>
+                    <p class="text-slate-600 mb-6">
+                        번거로운 서류 준비 없이 전문 행정사가 대신 처리<br>
+                        <span class="font-bold text-indigo-600">약 10-30만원</span>
+                    </p>
+                    <a href="https://pf.kakao.com/_pPxnFxj/chat" target="_blank" class="block w-full py-4 text-center rounded-lg font-bold transition" style="background: #FEE500; color: #1A1A1A;">
+                        카카오톡으로 상담 신청
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
-    <footer class="py-20 border-t bg-white text-center">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-slate-500 text-sm">
-                © 2026 CHECK VISA. All rights reserved. <br>
-                본 플랫폼은 법무부 등록 출입국 민원대행 기관인 <b>행정사사무소 늘좋은</b>에 의해 운영됩니다.
+    <!-- 푸터 -->
+    <footer class="py-12 px-6 bg-slate-900 text-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-3xl">🛡️</span>
+                        <span class="text-2xl font-black">CHECK VISA</span>
+                    </div>
+                    <p class="text-slate-400">외국인 근로자를 위한 비자 D-Day 관리 서비스</p>
+                </div>
+                
+                <div class="flex flex-wrap gap-6 text-sm">
+                    <a href="#calculator" class="text-slate-400 hover:text-white transition">D-Day 계산기</a>
+                    <a href="business.html" class="text-slate-400 hover:text-white transition">기업 서비스</a>
+                    <a href="https://hireme.kr" target="_blank" class="text-slate-400 hover:text-white transition">HireMe</a>
+                </div>
+            </div>
+            
+            <div class="pt-6 border-t border-slate-700 text-center text-slate-400 text-sm">
+                <p>© 2025 CheckVisa. All rights reserved.</p>
+                <p class="mt-2">운영 by 행정사사무소 늘좋은</p>
             </div>
         </div>
     </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 비자 설명 매핑
+        const visaDescriptions = {
+            'E-1': '교수 비자 | 대학 교수 및 전문 교육 활동',
+            'E-2': '회화지도 비자 | 외국어 회화 강사',
+            'E-3': '연구 비자 | 연구기관 연구원',
+            'E-4': '기술지도 비자 | 기술 지도 및 기술 이전',
+            'E-5': '전문직업 비자 | 법률가, 회계사 등 전문직',
+            'E-6': '예술흥행 비자 | 예술·연예·운동 분야',
+            'E-7': '특정활동 비자 | 전문 기술 보유자',
+            'E-8': '계절근로 비자 | 농축산업 계절 근로',
+            'E-9': '비전문취업 비자 | 제조·농축산·어업 분야',
+            'E-10': '선원취업 비자 | 선원 및 어선원',
+            'F-1': '방문동거 비자 | 친척 방문 및 동거',
+            'F-2': '거주 비자 | 장기 거주 자격',
+            'F-3': '동반 비자 | 가족 동반',
+            'F-4': '재외동포 비자 | 재외동포 체류',
+            'F-5': '영주 비자 | 영주권자',
+            'F-6': '결혼이민 비자 | 한국인 배우자',
+            'B-1': '사증면제 비자 | 무비자 입국',
+            'B-2': '관광통과 비자 | 단기 관광',
+            'C-3': '단기방문 비자 | 단기 방문',
+            'D-2': '유학 비자 | 대학·대학원 유학',
+            'D-4': '일반연수 비자 | 어학연수·기술연수',
+            'D-1': '문화예술 비자 | 문화예술 활동',
+            'D-3': '기업투자 비자 | 기업 투자',
+            'D-5': '취재 비자 | 언론 취재 활동',
+            'D-6': '종교 비자 | 종교 활동',
+            'D-7': '주재 비자 | 외국 기업 주재원',
+            'D-8': '기업투자 비자 | 기업 투자',
+            'D-9': '무역경영 비자 | 무역·경영 활동',
+            'D-10': '구직 비자 | 취업 준비',
+            'G-1': '기타 비자 | 기타 활동',
+            'H-1': '관광취업 비자 | 워킹홀리데이',
+            'H-2': '방문취업 비자 | 중국·구소련 동포'
+        };
+        
+        // 비자 종류 선택 시 설명 표시
+        document.getElementById('visa-type').addEventListener('change', function() {
+            const visaType = this.value;
+            const descEl = document.getElementById('visa-desc');
+            
+            if (visaType && visaDescriptions[visaType]) {
+                descEl.textContent = visaDescriptions[visaType];
+            } else {
+                descEl.textContent = '';
+            }
+        });
+        
+        // 연장 가능일 계산 (월 단위 -4개월 +1일)
+        function calcExtensionDate(expiryDateStr) {
+            const d = new Date(expiryDateStr);
+            d.setMonth(d.getMonth() - 4); // 4개월 전
+            d.setDate(d.getDate() + 1);   // +1일 버퍼
+            return d;
+        }
+        
+        // 날짜를 한국어 형식으로 변환
+        function formatDateKorean(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            return `${year}년 ${month}월 ${day}일`;
+        }
+        
+        // D-Day 계산
+        function calcDday(expiryDateStr) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const expiry = new Date(expiryDateStr);
+            expiry.setHours(0, 0, 0, 0);
+            const diff = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+            return diff;
+        }
+        
+        // 상태 아이콘 결정
+        function getStatusIcon(targetDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const target = new Date(targetDate);
+            target.setHours(0, 0, 0, 0);
+            const diff = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+            
+            if (diff < 0) return '❌';
+            if (diff <= 7) return '⚠️';
+            return '✅';
+        }
+        
+        // D-Day 계산하기 버튼
+        document.getElementById('calc-btn').addEventListener('click', function() {
+            const visaType = document.getElementById('visa-type').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+            
+            if (!visaType) {
+                alert('비자 종류를 선택해주세요.');
+                return;
+            }
+            
+            if (!expiryDate) {
+                alert('체류 만료일을 입력해주세요.');
+                return;
+            }
+            
+            // 날짜 계산
+            const expiry = new Date(expiryDate);
+            const extensionDate = calcExtensionDate(expiryDate);
+            const d90 = new Date(expiry); d90.setDate(d90.getDate() - 90);
+            const d60 = new Date(expiry); d60.setDate(d60.getDate() - 60);
+            const d30 = new Date(expiry); d30.setDate(d30.getDate() - 30);
+            const dday = calcDday(expiryDate);
+            
+            // D-Day 숫자 표시
+            const ddayEl = document.getElementById('d-day-number');
+            if (dday < 0) {
+                ddayEl.textContent = '만료됨';
+                ddayEl.className = 'd-day-color-darkred';
+            } else {
+                ddayEl.textContent = `D-${dday}`;
+                if (dday >= 90) {
+                    ddayEl.className = 'd-day-color-green';
+                } else if (dday >= 60) {
+                    ddayEl.className = 'd-day-color-orange';
+                } else if (dday >= 30) {
+                    ddayEl.className = 'd-day-color-red';
+                } else {
+                    ddayEl.className = 'd-day-color-darkred';
+                }
+            }
+            
+            document.getElementById('expiry-date-display').textContent = 
+                `체류 만료일: ${formatDateKorean(expiry)}`;
+            
+            // 날짜 테이블 생성
+            const tableBody = document.getElementById('date-table-body');
+            tableBody.innerHTML = `
+                <tr class="border-b border-slate-200">
+                    <td class="py-3 px-4 font-bold">연장 신청 가능일</td>
+                    <td class="py-3 px-4">${formatDateKorean(extensionDate)}</td>
+                    <td class="py-3 px-4 text-center text-2xl">${getStatusIcon(extensionDate)}</td>
+                </tr>
+                <tr class="border-b border-slate-200">
+                    <td class="py-3 px-4 font-bold">D-90 (연장 권장)</td>
+                    <td class="py-3 px-4">${formatDateKorean(d90)}</td>
+                    <td class="py-3 px-4 text-center text-2xl">${getStatusIcon(d90)}</td>
+                </tr>
+                <tr class="border-b border-slate-200">
+                    <td class="py-3 px-4 font-bold">D-60 (서류 준비)</td>
+                    <td class="py-3 px-4">${formatDateKorean(d60)}</td>
+                    <td class="py-3 px-4 text-center text-2xl">${getStatusIcon(d60)}</td>
+                </tr>
+                <tr class="border-b border-slate-200">
+                    <td class="py-3 px-4 font-bold">D-30 (긴급 처리)</td>
+                    <td class="py-3 px-4">${formatDateKorean(d30)}</td>
+                    <td class="py-3 px-4 text-center text-2xl">${getStatusIcon(d30)}</td>
+                </tr>
+                <tr>
+                    <td class="py-3 px-4 font-bold">D-Day (만료일)</td>
+                    <td class="py-3 px-4">${formatDateKorean(expiry)}</td>
+                    <td class="py-3 px-4 text-center text-2xl">${getStatusIcon(expiry)}</td>
+                </tr>
+            `;
+            
+            // 연장 가능일 배너
+            document.getElementById('extension-date-text').textContent = 
+                `📅 ${formatDateKorean(extensionDate)}부터 체류기간 연장 신청이 가능합니다.`;
+            
+            // 비자별 메시지 표시
+            document.querySelectorAll('[id^="visa-message-"]').forEach(el => el.classList.add('hidden'));
+            
+            if (visaType === 'E-9') {
+                document.getElementById('visa-message-e9').classList.remove('hidden');
+            } else if (visaType === 'E-8') {
+                document.getElementById('visa-message-e8').classList.remove('hidden');
+            } else if (visaType === 'H-1') {
+                document.getElementById('visa-message-h1').classList.remove('hidden');
+            } else if (visaType === 'H-2') {
+                document.getElementById('visa-message-h2').classList.remove('hidden');
+            } else if (visaType === 'F-5') {
+                document.getElementById('visa-message-f5').classList.remove('hidden');
+            } else {
+                document.getElementById('visa-message-default').classList.remove('hidden');
+            }
+            
+            // 결과 섹션 표시
+            document.getElementById('result-section').classList.remove('hidden');
+            
+            // 결과로 스크롤
+            document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        
+        // 모달 열기/닫기
+        const modalOverlay = document.getElementById('modal-overlay');
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
+        openModalBtn.addEventListener('click', function() {
+            const visaType = document.getElementById('visa-type').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+            
+            if (!visaType || !expiryDate) {
+                alert('먼저 비자 종류와 만료일을 입력한 후 D-Day를 계산해주세요.');
+                return;
+            }
+            
+            // 모달 필드에 자동 입력
+            document.getElementById('modal-visa-type').value = visaType;
+            document.getElementById('modal-expiry-date').value = expiryDate;
+            
+            modalOverlay.classList.add('active');
+        });
+        
+        closeModalBtn.addEventListener('click', function() {
+            modalOverlay.classList.remove('active');
+        });
+        
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        });
+        
+        // 셀프비자 버튼 (준비 중 알림)
+        document.getElementById('selfvisa-btn').addEventListener('click', function() {
+            alert('현재 준비 중입니다. 곧 오픈 예정입니다! 😊');
+        });
+        
+        document.getElementById('selfvisa-btn-2').addEventListener('click', function() {
+            alert('현재 준비 중입니다. 곧 오픈 예정입니다! 😊');
+        });
+    </script>
 </body>
 </html>
