@@ -393,6 +393,15 @@
                     <h3 class="text-lg font-bold text-slate-900 mb-3">ℹ️ 일반적으로 만료 4개월 전부터 연장 신청이 가능합니다</h3>
                     <p class="text-slate-700">정확한 연장 요건은 출입국·외국인청에서 확인하세요.</p>
                 </div>
+                
+                <!-- 서류 자동작성 버튼 -->
+                <div class="card p-6 text-center" style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);">
+                    <h3 class="text-2xl font-bold text-white mb-3">📄 비자 서류 자동작성</h3>
+                    <p class="text-white opacity-90 mb-6">정보를 한 번만 입력하면 필요한 서류를 PDF로 자동 생성합니다</p>
+                    <button onclick="goToSelfVisa()" class="px-8 py-4 bg-white text-indigo-600 rounded-xl font-bold text-lg hover:bg-slate-50 transition shadow-lg">
+                        📝 서류 자동작성 하러 가기 →
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -832,14 +841,40 @@
             }
         });
         
-        // 셀프비자 버튼 (준비 중 알림)
+        // 셀프비자 버튼 (SelfVisa 페이지로 이동)
         document.getElementById('selfvisa-btn').addEventListener('click', function() {
-            alert('현재 준비 중입니다. 곧 오픈 예정입니다! 😊');
+            window.location.href = '/selfvisa/';
         });
         
         document.getElementById('selfvisa-btn-2').addEventListener('click', function() {
-            alert('현재 준비 중입니다. 곧 오픈 예정입니다! 😊');
+            window.location.href = '/selfvisa/';
         });
+        
+        // SelfVisa 페이지로 이동
+        function goToSelfVisa() {
+            const visaType = document.getElementById('visa-type').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+            
+            if (!visaType || !expiryDate) {
+                alert('비자 타입과 만료일을 먼저 입력해주세요.');
+                return;
+            }
+            
+            // URL 파라미터로 전달
+            const params = new URLSearchParams({ visaType, expiryDate });
+            
+            // localStorage에도 저장 (중앙화된 데이터)
+            const userData = JSON.parse(localStorage.getItem('checkvisa_user_data') || '{}');
+            localStorage.setItem('checkvisa_user_data', JSON.stringify({
+                ...userData, 
+                visaType, 
+                expiryDate, 
+                updatedAt: new Date().toISOString()
+            }));
+            
+            // SelfVisa 페이지로 이동
+            window.location.href = `/selfvisa?${params.toString()}`;
+        }
     </script>
 </body>
 </html>

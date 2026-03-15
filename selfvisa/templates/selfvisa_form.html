@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CheckVisa SelfVisa | 비자 서류 자동작성</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- PDF 생성 라이브러리 -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        body { 
+            font-family: 'Inter', 'Noto Sans KR', sans-serif; 
+            background: #f8fafc;
+            color: #334155;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .form-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .form-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        .form-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .form-card.selected {
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .form-card-header input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #4F46E5;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .form-card-body {
+            display: none;
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+        .form-card.selected .form-card-body {
+            display: block;
+        }
+        .fields-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 640px) {
+            .fields-grid-2 { grid-template-columns: 1fr; }
+        }
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .penalty-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+        }
+        .penalty-row select {
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .field-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+        .hidden { display: none !important; }
+        .e74-banner {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #92400e;
+        }
+        /* 라디오 버튼 공통 */
+        .radio-inline-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 20px;
+            margin-top: 6px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            padding: 2px 0;
+        }
+        .radio-option input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4F46E5;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        /* 가족 블록 */
+        .family-member-block {
+            border-left: 3px solid #e5e7eb;
+            padding-left: 4px;
+        }
+        .family-member-block:has(input[type="checkbox"]:checked) {
+            border-left-color: #4F46E5;
+        }
+        .field-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .field-group input[type="text"],
+        .field-group input[type="tel"],
+        .field-group input[type="date"],
+        .field-group select {
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        @media (max-width: 480px) {
+            .fields-grid-2 { grid-template-columns: 1fr; }
+            .radio-inline-group { gap: 6px 14px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 네비게이션 -->
+    <nav class="glass-nav fixed top-0 left-0 right-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="/" class="text-2xl font-black text-slate-900">
+                <span style="color: #4F46E5;">CHECK</span>VISA
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="/" class="text-slate-700 hover:text-indigo-600 font-medium">← 메인으로</a>
+                <a href="/business.html" class="text-slate-700 hover:text-indigo-600 font-medium">기업 서비스</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="pt-24 pb-20 px-6">
+        <div class="max-w-4xl mx-auto">
+            <!-- 헤더 -->
+            <div class="text-center mb-12">
+                <div class="inline-block px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold mb-4">
+                    🤖 AI 자동작성 서비스
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4">
+                    비자 서류 자동작성
+                </h1>
+                <p class="text-xl text-slate-600">
+                    정보를 한 번만 입력하면 필요한 서류를 PDF로 자동 생성합니다
+                </p>
+            </div>
+
+            <!-- 기본 정보 입력 -->
+            <div class="form-section">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6">📋 기본 정보</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label">영문 성 (Surname) <span class="text-red-600">*</span></label>
+                        <input type="text" id="surnameEn" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="KIM">
+                    </div>
+                    <div>
+                        <label class="field-label">영문 이름 (Given Name) <span class="text-red-600">*</span></label>
+                        <input type="text" id="givenNameEn" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="CHUL SOO">
+                    </div>
+                    <div>
+                        <label class="field-label">한글/한자 성명</label>
+                        <input type="text" id="nameKo" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="김철수">
+                    </div>
+                    <div>
+                        <label class="field-label">생년월일 <span class="text-red-600">*</span></label>
+                        <input type="date" id="birthDate" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="field-label">성별 <span class="text-red-600">*</span></label>
+                        <select id="gender" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none">
+                            <option value="">선택하세요</option>
+                            <option value="M">남성</option>
+                            <option value="F">여성</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">국적 <span class="text-red-600">*</span></label>
+                        <input type="text" id="nationality" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="VIETNAM">
+                    </div>
+                    <div>
+                        <label class="field-label">외국인등록번호</label>
+                        <input type="text" id="alienRegNum" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="000000-0000000">
+                    </div>
+                    <div>
+                        <label class="field-label">여권번호 <span class="text-red-600">*</span></label>
+                        <input type="text" id="passportNum" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="M12345678">
+                    </div>
+                    <div>
+                        <label class="field-label">여권 발급일</label>
+                        <input type="date" id="passportIssue" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="field-label">여권 만료일</label>
+                        <input type="date" id="passportExpiry" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="field-label">한국 주소 <span class="text-red-600">*</span></label>
+                        <input type="text" id="address" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="서울시 강남구 테헤란로 123">
+                    </div>
+                    <div>
+                        <label class="field-label">전화번호</label>
+                        <input type="tel" id="phone" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="02-1234-5678">
+                    </div>
+                    <div>
+                        <label class="field-label">휴대전화 <span class="text-red-600">*</span></label>
+                        <input type="tel" id="cellPhone" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="010-1234-5678">
+                    </div>
+                    <div>
+                        <label class="field-label">이메일</label>
+                        <input type="email" id="email" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="example@email.com">
+                    </div>
+                    <div>
+                        <label class="field-label">현재 비자 종류 <span class="text-red-600">*</span></label>
+                        <input type="text" id="visaType" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="E-9">
+                    </div>
+                    <div>
+                        <label class="field-label">체류 만료일</label>
+                        <input type="date" id="expiryDate" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 근무지 정보 -->
+            <div class="form-section">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6">🏢 근무지 정보</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label">현재 근무처명</label>
+                        <input type="text" id="employer" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="(주)예시기업">
+                    </div>
+                    <div>
+                        <label class="field-label">사업자등록번호</label>
+                        <input type="text" id="bizRegNum" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="123-45-67890">
+                    </div>
+                    <div>
+                        <label class="field-label">근무처 전화번호</label>
+                        <input type="tel" id="workPhone" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none" placeholder="02-1234-5678">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 서식 선택 섹션 -->
+            <section class="form-section" id="formSelectSection">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">📂 필요한 서류 선택</h2>
+                <p style="color:#6b7280;margin-bottom:20px;font-size:14px;">
+                    필요한 서류를 선택하면 추가 입력 항목이 나타납니다. 선택한 서류만 PDF로 생성됩니다.
+                </p>
+                <div class="form-cards-grid">
+                    
+                    <!-- 카드 1: 통합신청서 -->
+                    <div class="form-card" id="card-integrated">
+                        <div class="form-card-header">
+                            <input type="checkbox" id="check-integrated" checked>
+                            <div style="flex:1;">
+                                <div style="font-weight:600;font-size:16px;">📋 통합신청서 (신고서)</div>
+                                <div style="color:#6b7280;font-size:13px;margin-top:2px;">체류기간 연장, 비자 변경, 근무처 변경 등 모든 출입국 신청에 사용</div>
+                                <span style="background:#dcfce7;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;">무료</span>
+                            </div>
+                        </div>
+                        <div class="form-card-body">
+                            <p style="font-size:13px;color:#374151;margin-bottom:12px;">신청 구분을 선택해주세요:</p>
+                            <div class="radio-group">
+                                <label><input type="radio" name="applicationType" value="extension" checked> 체류기간 연장허가</label>
+                                <label><input type="radio" name="applicationType" value="change"> 체류자격 변경허가</label>
+                                <label><input type="radio" name="applicationType" value="grant"> 체류자격 부여</label>
+                                <label><input type="radio" name="applicationType" value="workplace"> 근무처변경·추가허가/신고</label>
+                                <label><input type="radio" name="applicationType" value="residence"> 체류지 변경신고</label>
+                                <label><input type="radio" name="applicationType" value="alien_reg"> 외국인 등록</label>
+                            </div>
+                            <div style="margin-top:12px;">
+                                <label class="field-label">체류 목적 / 비고 (선택)</label>
+                                <textarea id="applicationPurpose" rows="2" class="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="예: 동일 고용주 하에 체류기간 연장 신청"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 카드 2: 거주숙소제공확인서 -->
+                    <div class="form-card" id="card-accommodation">
+                        <div class="form-card-header">
+                            <input type="checkbox" id="check-accommodation">
+                            <div style="flex:1;">
+                                <div style="font-weight:600;font-size:16px;">🏠 거주숙소제공확인서</div>
+                                <div style="color:#6b7280;font-size:13px;margin-top:2px;">고용주 또는 제3자가 숙소를 제공하는 경우 필요</div>
+                                <span style="background:#dcfce7;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;">무료</span>
+                            </div>
+                        </div>
+                        <div class="form-card-body">
+                            <div style="margin-bottom:16px;padding:10px;background:#fff3cd;border-radius:8px;border:1px solid #ffc107;">
+                                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                    <input type="checkbox" id="accommodationHandwrite" onchange="toggleHandwrite('accommodation')">
+                                    <span style="font-size:13px;">✏️ 제공자 정보는 손으로 직접 작성할 예정입니다 (아래 필드 건너뜀)</span>
+                                </label>
+                            </div>
+                            <div id="accommodationFields">
+                                <p style="font-size:13px;font-weight:600;margin-bottom:12px;color:#1e3a5f;">숙소 제공자 정보</p>
+                                <div class="fields-grid-2">
+                                    <div class="field-group">
+                                        <label class="field-label">제공자 성명 *</label>
+                                        <input type="text" id="providerName" placeholder="홍길동 / HONG GIL DONG">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">제공자 국적 *</label>
+                                        <input type="text" id="providerNationality" placeholder="대한민국">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">제공자 연락처 *</label>
+                                        <input type="tel" id="providerPhone" placeholder="010-1234-5678">
+                                    </div>
+                                </div>
+                                
+                                <!-- 외국인과의 관계 — 라디오 -->
+                                <div class="field-group" style="margin-top:12px;">
+                                    <label class="field-label">외국인과의 관계 *</label>
+                                    <div class="radio-inline-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="providerRelation" value="가족/친척" id="rel_family"> 가족/친척
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="providerRelation" value="고용주" id="rel_employer"> 고용주
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="providerRelation" value="기타" id="rel_other"> 기타
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- 소유형태 — 라디오 -->
+                                <div class="field-group" style="margin-top:12px;">
+                                    <label class="field-label">소유형태 *</label>
+                                    <div class="radio-inline-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="ownershipType" value="자가" id="own_self"> 자가
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="ownershipType" value="임대" id="own_rent"> 임대
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="ownershipType" value="기타" id="own_other"> 기타
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- 주거형태 — 라디오 -->
+                                <div class="field-group" style="margin-top:12px;">
+                                    <label class="field-label">주거형태 *</label>
+                                    <div class="radio-inline-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="housingType" value="개인주택" id="house_private"> 개인주택
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="housingType" value="숙박시설" id="house_lodging"> 숙박시설
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="housingType" value="기숙사" id="house_dorm"> 기숙사
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="housingType" value="기타" id="house_other"> 기타
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="field-group" style="margin-top:12px;">
+                                    <label class="field-label">숙소 제공 시작일 *</label>
+                                    <input type="date" id="providerStartDate">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 카드 3: 신원보증서 -->
+                    <div class="form-card" id="card-guarantor">
+                        <div class="form-card-header">
+                            <input type="checkbox" id="check-guarantor">
+                            <div style="flex:1;">
+                                <div style="font-weight:600;font-size:16px;">🤝 신원보증서</div>
+                                <div style="color:#6b7280;font-size:13px;margin-top:2px;">보증인이 체류를 보증하는 경우 필요 (비자 신규 또는 일부 연장)</div>
+                                <span style="background:#dcfce7;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;">무료</span>
+                            </div>
+                        </div>
+                        <div class="form-card-body">
+                            <div style="margin-bottom:16px;padding:10px;background:#fff3cd;border-radius:8px;border:1px solid #ffc107;">
+                                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                    <input type="checkbox" id="guarantorHandwrite" onchange="toggleHandwrite('guarantor')">
+                                    <span style="font-size:13px;">✏️ 보증인 정보는 손으로 직접 작성할 예정입니다 (아래 필드 건너뜀)</span>
+                                </label>
+                            </div>
+                            <div id="guarantorFields">
+                                <p style="font-size:13px;font-weight:600;margin-bottom:16px;color:#1e3a5f;">보증인 정보 입력</p>
+
+                                <!-- 행 1: 성명 + 국적 -->
+                                <div class="fields-grid-2">
+                                    <div class="field-group">
+                                        <label class="field-label">보증인 성명 *</label>
+                                        <input type="text" id="guarantorName" placeholder="홍길동">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">보증인 국적 *</label>
+                                        <input type="text" id="guarantorNationality" placeholder="대한민국">
+                                    </div>
+                                </div>
+
+                                <!-- 행 2: 성별 라디오 -->
+                                <div class="field-group" style="margin-top:12px;">
+                                    <label class="field-label">보증인 성별 *</label>
+                                    <div class="radio-inline-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="guarantorGender" value="남" id="g_male"> 남
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="guarantorGender" value="여" id="g_female"> 여
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- 행 3: 여권번호 또는 생년월일 + 연락처 -->
+                                <div class="fields-grid-2" style="margin-top:12px;">
+                                    <div class="field-group">
+                                        <label class="field-label">여권번호 또는 생년월일 *</label>
+                                        <input type="text" id="guarantorPassportOrBirth" placeholder="M12345678 또는 1990-01-01">
+                                        <p style="font-size:11px;color:#9ca3af;margin-top:3px;">한국인은 생년월일, 외국인은 여권번호 입력</p>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">보증인 연락처 *</label>
+                                        <input type="tel" id="guarantorPhone" placeholder="010-0000-0000">
+                                    </div>
+                                </div>
+
+                                <!-- 행 4: 보증인 주소 (전체) -->
+                                <div class="field-group" style="margin-top:12px;">
+                                    <label class="field-label">보증인 주소 *</label>
+                                    <textarea id="guarantorAddress" rows="2" placeholder="서울특별시 강남구..." style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;"></textarea>
+                                </div>
+
+                                <!-- 행 5: 피보증인과의 관계 + 보증인 근무처 -->
+                                <div class="fields-grid-2" style="margin-top:12px;">
+                                    <div class="field-group">
+                                        <label class="field-label">피보증인과의 관계 *</label>
+                                        <input type="text" id="guarantorRelation" placeholder="고용주, 친구 등">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">보증인 근무처</label>
+                                        <input type="text" id="guarantorEmployer" placeholder="(주)회사명">
+                                    </div>
+                                </div>
+
+                                <!-- 행 6: 보증인 직위 + 보증인 근무처 주소 -->
+                                <div class="fields-grid-2" style="margin-top:12px;">
+                                    <div class="field-group">
+                                        <label class="field-label">보증인 직위</label>
+                                        <input type="text" id="guarantorPosition" placeholder="대표이사">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">보증인 근무처 주소</label>
+                                        <input type="text" id="guarantorWorkAddress" placeholder="서울특별시...">
+                                    </div>
+                                </div>
+
+                                <!-- 행 7: 보증기간 시작 + 종료 -->
+                                <div class="fields-grid-2" style="margin-top:12px;">
+                                    <div class="field-group">
+                                        <label class="field-label">보증기간 시작 *</label>
+                                        <input type="date" id="guarantorPeriodFrom">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">보증기간 종료 *</label>
+                                        <input type="date" id="guarantorPeriodTo">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 카드 4: 거소신고(신청)서 -->
+                    <div class="form-card" id="card-overseas">
+                        <div class="form-card-header">
+                            <input type="checkbox" id="check-overseas">
+                            <div style="flex:1;">
+                                <div style="font-weight:600;font-size:16px;">🇰🇷 거소신고(신청)서</div>
+                                <div style="color:#6b7280;font-size:13px;margin-top:2px;">재외동포(F-4) 비자 전용 서식</div>
+                                <span style="background:#dcfce7;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;">무료</span>
+                            </div>
+                        </div>
+                        <div class="form-card-body">
+                            <p style="font-size:13px;color:#374151;margin-bottom:12px;">신청 구분을 선택해주세요:</p>
+                            <div class="radio-group">
+                                <label><input type="radio" name="overseasType" value="신고"> 거소신고 (최초)</label>
+                                <label><input type="radio" name="overseasType" value="이전신고"> 거소이전신고</label>
+                                <label><input type="radio" name="overseasType" value="변경"> 거소변경</label>
+                            </div>
+                            <div style="margin-top:12px;">
+                                <label class="field-label">국내거소신고번호 (기존 소지자)</label>
+                                <input type="text" id="domesticResidenceNum" class="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="기존에 신고번호가 있는 경우만 입력">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 카드 5: E-7-4 신상기술서 -->
+                    <div class="form-card" id="card-profile-e74">
+                        <div class="form-card-header">
+                            <input type="checkbox" id="check-profile-e74">
+                            <div style="flex:1;">
+                                <div style="font-weight:600;font-size:16px;">📝 E-7-4 신상기술서 (K-POINT)</div>
+                                <div style="color:#6b7280;font-size:13px;margin-top:2px;">E-7-4 점수제 전환 신청자 전용 — 학력, 가족관계 기재</div>
+                                <span style="background:#fef3c7;color:#d97706;font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;">E-7 비자만</span>
+                            </div>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="profile-e74-fields">
+                                <!-- 학력 + 학교명 -->
+                                <div class="fields-grid-2">
+                                    <div class="field-group">
+                                        <label class="field-label">최종 학력 *</label>
+                                        <select id="education">
+                                            <option value="">선택하세요</option>
+                                            <option value="고등학교 졸업">고등학교 졸업</option>
+                                            <option value="전문대학 졸업">전문대학 졸업</option>
+                                            <option value="대학교 졸업">대학교 졸업</option>
+                                            <option value="대학원 석사">대학원 석사</option>
+                                            <option value="대학원 박사">대학원 박사</option>
+                                        </select>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">학교명 *</label>
+                                        <input type="text" id="schoolName" placeholder="○○대학교">
+                                    </div>
+                                </div>
+
+                                <!-- 결혼여부 — 라디오 버튼 -->
+                                <div class="field-group" style="margin-top:16px;">
+                                    <label class="field-label">결혼여부 *</label>
+                                    <div class="radio-inline-group" style="margin-top:6px;">
+                                        <label class="radio-option">
+                                            <input type="radio" name="maritalStatus" value="기혼" id="married_yes" onchange="handleMaritalStatus()"> 기혼
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="maritalStatus" value="미혼" id="married_no" onchange="handleMaritalStatus()"> 미혼
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- 결혼일자 — 기혼 선택 시만 표시 -->
+                                <div id="marriageDateSection" style="display:none;margin-top:10px;">
+                                    <label class="field-label">결혼일자</label>
+                                    <input type="date" id="marriageDate" style="padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                                </div>
+
+                                <!-- 가족관계 섹션 -->
+                                <div style="margin-top:20px;">
+                                    <p style="font-size:14px;font-weight:600;color:#1e3a5f;margin-bottom:12px;">가족관계</p>
+
+                                    <!-- 배우자 -->
+                                    <div class="family-member-block" id="spouseBlock">
+                                        <label class="checkbox-toggle" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;">
+                                            <input type="checkbox" id="hasSpouse" onchange="toggleFamilyMember('spouse')" style="width:16px;height:16px;accent-color:#4F46E5;">
+                                            <span style="font-size:14px;font-weight:500;">배우자 있음</span>
+                                        </label>
+                                        <div id="spouseDetail" style="display:none;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-left:24px;">
+                                            <div class="fields-grid-2">
+                                                <div class="field-group">
+                                                    <label class="field-label">배우자 성명</label>
+                                                    <input type="text" id="spouseName" placeholder="JUNGGOO YIM">
+                                                </div>
+                                                <div class="field-group">
+                                                    <label class="field-label">배우자 생년월일</label>
+                                                    <input type="date" id="spouseBirth">
+                                                </div>
+                                            </div>
+                                            <div class="field-group" style="margin-top:10px;">
+                                                <label class="field-label">국내 체류</label>
+                                                <div class="radio-inline-group">
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="spouseInKorea" value="있음" id="spouse_in_yes"> 있음
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="spouseInKorea" value="없음" id="spouse_in_no"> 없음
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 자녀 1 -->
+                                    <div class="family-member-block" style="margin-top:10px;" id="child1Block">
+                                        <label class="checkbox-toggle" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;">
+                                            <input type="checkbox" id="hasChild1" onchange="toggleFamilyMember('child1')" style="width:16px;height:16px;accent-color:#4F46E5;">
+                                            <span style="font-size:14px;font-weight:500;">자녀 1 있음</span>
+                                        </label>
+                                        <div id="child1Detail" style="display:none;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-left:24px;">
+                                            <div class="fields-grid-2">
+                                                <div class="field-group">
+                                                    <label class="field-label">성명</label>
+                                                    <input type="text" id="child1Name" placeholder="자녀 1 성명">
+                                                </div>
+                                                <div class="field-group">
+                                                    <label class="field-label">생년월일</label>
+                                                    <input type="date" id="child1Birth">
+                                                </div>
+                                            </div>
+                                            <div class="field-group" style="margin-top:10px;">
+                                                <label class="field-label">국내 체류</label>
+                                                <div class="radio-inline-group">
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="child1InKorea" value="있음"> 있음
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="child1InKorea" value="없음"> 없음
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 자녀 2 -->
+                                    <div class="family-member-block" style="margin-top:10px;" id="child2Block">
+                                        <label class="checkbox-toggle" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;">
+                                            <input type="checkbox" id="hasChild2" onchange="toggleFamilyMember('child2')" style="width:16px;height:16px;accent-color:#4F46E5;">
+                                            <span style="font-size:14px;font-weight:500;">자녀 2 있음</span>
+                                        </label>
+                                        <div id="child2Detail" style="display:none;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-left:24px;">
+                                            <div class="fields-grid-2">
+                                                <div class="field-group">
+                                                    <label class="field-label">성명</label>
+                                                    <input type="text" id="child2Name" placeholder="자녀 2 성명">
+                                                </div>
+                                                <div class="field-group">
+                                                    <label class="field-label">생년월일</label>
+                                                    <input type="date" id="child2Birth">
+                                                </div>
+                                            </div>
+                                            <div class="field-group" style="margin-top:10px;">
+                                                <label class="field-label">국내 체류</label>
+                                                <div class="radio-inline-group">
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="child2InKorea" value="있음"> 있음
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="child2InKorea" value="없음"> 없음
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 자녀 3 -->
+                                    <div class="family-member-block" style="margin-top:10px;" id="child3Block">
+                                        <label class="checkbox-toggle" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;">
+                                            <input type="checkbox" id="hasChild3" onchange="toggleFamilyMember('child3')" style="width:16px;height:16px;accent-color:#4F46E5;">
+                                            <span style="font-size:14px;font-weight:500;">자녀 3 있음</span>
+                                        </label>
+                                        <div id="child3Detail" style="display:none;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-left:24px;">
+                                            <div class="fields-grid-2">
+                                                <div class="field-group">
+                                                    <label class="field-label">성명</label>
+                                                    <input type="text" id="child3Name" placeholder="자녀 3 성명">
+                                                </div>
+                                                <div class="field-group">
+                                                    <label class="field-label">생년월일</label>
+                                                    <input type="date" id="child3Birth">
+                                                </div>
+                                            </div>
+                                            <div class="field-group" style="margin-top:10px;">
+                                                <label class="field-label">국내 체류</label>
+                                                <div class="radio-inline-group">
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="child3InKorea" value="있음"> 있음
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="child3InKorea" value="없음"> 없음
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div><!-- /가족관계 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 카드 6: E-7-4 점수제 심사표 -->
+                    <div class="form-card" id="card-score-e74">
+                        <div class="form-card-header">
+                            <input type="checkbox" id="check-score-e74">
+                            <div style="flex:1;">
+                                <div style="font-weight:600;font-size:16px;">📊 E-7-4 점수제 자체 심사표</div>
+                                <div style="color:#6b7280;font-size:13px;margin-top:2px;">E-7-4 전환 점수 계산 (필요 점수: 200점)</div>
+                                <span style="background:#fef3c7;color:#d97706;font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;">E-7 비자만</span>
+                            </div>
+                        </div>
+                        <div class="form-card-body">
+                            <p style="color:#6b7280;margin-bottom:16px;font-size:13px;">E-9에서 E-7-4로 전환을 원하시는 경우 점수를 계산해보세요</p>
+                            
+                            <!-- 1. 소득 점수 -->
+                            <div style="margin-bottom:16px;">
+                                <h3 style="font-size:15px;font-weight:600;margin-bottom:8px;">1️⃣ 소득 점수 (최대 120점)</h3>
+                                <label class="field-label">최근 2년 평균 소득 (만원)</label>
+                                <select id="incomeRange" onchange="calculateScore()" class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                                    <option value="0">선택하세요</option>
+                                    <option value="5000">5,000만원 이상 (120점)</option>
+                                    <option value="4500">4,500만원 이상 (110점)</option>
+                                    <option value="4000">4,000만원 이상 (95점)</option>
+                                    <option value="3500">3,500만원 이상 (80점)</option>
+                                    <option value="3000">3,000만원 이상 (65점)</option>
+                                    <option value="2500">2,500만원 이상 (50점)</option>
+                                </select>
+                                <span id="incomeScoreBadge" style="display:inline-block;margin-top:4px;padding:4px 10px;background:#e5e7eb;border-radius:6px;font-size:12px;font-weight:600;">0점</span>
+                            </div>
+
+                            <!-- 2. 한국어 능력 -->
+                            <div style="margin-bottom:16px;">
+                                <h3 style="font-size:15px;font-weight:600;margin-bottom:8px;">2️⃣ 한국어 능력 점수 (최대 120점)</h3>
+                                <div class="fields-grid-2">
+                                    <div>
+                                        <label class="field-label">자격 구분</label>
+                                        <select id="langCertType" onchange="calculateScore()" class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                                            <option value="none">해당 없음</option>
+                                            <option value="topik">TOPIK (한국어능력시험)</option>
+                                            <option value="kiip">KIIP (사회통합프로그램)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="field-label">등급/단계</label>
+                                        <select id="langLevel" onchange="calculateScore()" class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                                            <option value="0">선택하세요</option>
+                                            <option value="2">2급 / 2단계 이수 (50점)</option>
+                                            <option value="3">3급 / 3단계 이수 (80점)</option>
+                                            <option value="4">4급 이상 / 4~5단계 이수 (120점 만점)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <span id="langScoreBadge" style="display:inline-block;margin-top:4px;padding:4px 10px;background:#e5e7eb;border-radius:6px;font-size:12px;font-weight:600;">0점</span>
+                            </div>
+
+                            <!-- 3. 연령 점수 -->
+                            <div style="margin-bottom:16px;">
+                                <h3 style="font-size:15px;font-weight:600;margin-bottom:8px;">3️⃣ 연령 점수 (최대 60점)</h3>
+                                <p style="font-size:12px;color:#6b7280;margin-bottom:4px;">생년월일 기준으로 자동 계산됩니다</p>
+                                <span id="ageScoreBadge" style="display:inline-block;padding:4px 10px;background:#e5e7eb;border-radius:6px;font-size:12px;font-weight:600;">0점</span>
+                            </div>
+
+                            <!-- 4. 가점 -->
+                            <div style="margin-bottom:16px;">
+                                <h3 style="font-size:15px;font-weight:600;margin-bottom:8px;">4️⃣ 가점 항목</h3>
+                                <div style="margin-bottom:8px;padding:8px;background:#fef3c7;border-radius:6px;font-size:12px;color:#92400e;">
+                                    ⚠️ 중앙부처 추천과 광역지자체 추천은 중복 선택 불가 (1개만 선택)
+                                </div>
+                                <div id="bonusItems" style="display:flex;flex-direction:column;gap:6px;">
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                        <input type="checkbox" id="bonus_central" onchange="handleGovBonus('central')">
+                                        <span style="font-size:13px;">중앙부처 추천 <strong style="color:#1d4ed8;">+30점</strong></span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                        <input type="checkbox" id="bonus_regional" onchange="handleGovBonus('regional')">
+                                        <span style="font-size:13px;">광역지자체 추천 <strong style="color:#1d4ed8;">+30점</strong></span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                        <input type="checkbox" id="bonus_employer" onchange="calculateScore()">
+                                        <span style="font-size:13px;">고용기업체 추천 <strong style="color:#1d4ed8;">+50점</strong></span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                        <input type="checkbox" id="bonus_tenure" onchange="calculateScore()">
+                                        <span style="font-size:13px;">현 근무처 3년 이상 근속 <strong style="color:#1d4ed8;">+20점</strong></span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                        <input type="checkbox" id="bonus_depop" onchange="calculateScore()">
+                                        <span style="font-size:13px;">인구감소지역/읍면지역 근무 <strong style="color:#1d4ed8;">+20점</strong></span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                        <input type="checkbox" id="bonus_cert" onchange="calculateScore()">
+                                        <span style="font-size:13px;">자격증 또는 국내 학위 보유 <strong style="color:#1d4ed8;">+20점</strong></span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                        <input type="checkbox" id="bonus_driver" onchange="calculateScore()">
+                                        <span style="font-size:13px;">국내 운전면허증 보유 <strong style="color:#1d4ed8;">+10점</strong></span>
+                                    </label>
+                                </div>
+                                <span id="bonusScoreBadge" style="display:inline-block;margin-top:8px;padding:4px 10px;background:#dcfce7;color:#16a34a;border-radius:6px;font-size:12px;font-weight:600;">+0점</span>
+                            </div>
+
+                            <!-- 5. 벌점 -->
+                            <div style="margin-bottom:16px;">
+                                <h3 style="font-size:15px;font-weight:600;margin-bottom:8px;">5️⃣ 벌점 항목</h3>
+                                <div id="penaltyItems">
+                                    <div class="penalty-row">
+                                        <span style="font-size:13px;">100만원 미만 범칙금</span>
+                                        <select id="penalty_fine" onchange="calculateScore()" class="p-1 border border-slate-300 rounded text-xs">
+                                            <option value="0">0회</option>
+                                            <option value="1">1회 (-5점)</option>
+                                            <option value="2">2회 (-10점)</option>
+                                            <option value="3">3회 이상 (-20점)</option>
+                                        </select>
+                                    </div>
+                                    <div class="penalty-row">
+                                        <span style="font-size:13px;">세금 체납</span>
+                                        <select id="penalty_tax" onchange="calculateScore()" class="p-1 border border-slate-300 rounded text-xs">
+                                            <option value="0">0회</option>
+                                            <option value="1">1회 (-5점)</option>
+                                            <option value="2">2회 (-10점)</option>
+                                            <option value="3">3회 이상 (-15점)</option>
+                                        </select>
+                                    </div>
+                                    <div class="penalty-row">
+                                        <span style="font-size:13px;">출입국관리법 위반</span>
+                                        <select id="penalty_immig" onchange="calculateScore()" class="p-1 border border-slate-300 rounded text-xs">
+                                            <option value="0">0회</option>
+                                            <option value="1">1회 (-5점)</option>
+                                            <option value="2">2회 (-10점)</option>
+                                            <option value="3">3회 이상 (-15점)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <span id="penaltyScoreBadge" style="display:inline-block;margin-top:8px;padding:4px 10px;background:#fee2e2;color:#dc2626;border-radius:6px;font-size:12px;font-weight:600;">-0점</span>
+                            </div>
+
+                            <!-- 총점 -->
+                            <div style="padding:16px;border-radius:12px;background:linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                    <span style="font-size:20px;font-weight:800;color:#1e293b;">총점</span>
+                                    <span id="scoreTotal" style="font-size:32px;font-weight:900;color:#4F46E5;">0점</span>
+                                </div>
+                                <div id="scoreMessage" style="text-align:center;font-weight:600;font-size:14px;"></div>
+                            </div>
+
+                            <button onclick="calculateScore()" style="width:100%;margin-top:12px;background:#4F46E5;color:white;padding:10px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;">
+                                📊 점수 재계산하기
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 출력 섹션 -->
+            <section class="form-section" id="outputSection">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">📥 서류 생성</h2>
+                
+                <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:16px;margin-bottom:16px;">
+                    <p style="font-size:14px;color:#15803d;margin:0;">
+                        ✅ 선택한 서류를 PDF로 생성합니다.<br>
+                        <span style="font-size:12px;">여러 서류 선택 시 ZIP 파일로 묶어서 다운로드됩니다.</span>
+                    </p>
+                </div>
+                
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                    <div style="border:2px solid #4F46E5;border-radius:10px;padding:16px;text-align:center;cursor:pointer;" onclick="generatePDFs()">
+                        <div style="font-size:24px;margin-bottom:4px;">📄</div>
+                        <div style="font-weight:600;color:#4F46E5;">PDF 다운로드</div>
+                        <div style="font-size:12px;color:#6b7280;margin-top:4px;">선택한 서식 PDF 생성</div>
+                    </div>
+                    <div style="border:2px solid #e5e7eb;border-radius:10px;padding:16px;text-align:center;opacity:0.5;cursor:not-allowed;">
+                        <div style="font-size:24px;margin-bottom:4px;">📧</div>
+                        <div style="font-weight:600;color:#9ca3af;">이메일 전송</div>
+                        <div style="font-size:12px;background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:4px;margin-top:4px;display:inline-block;">🔒 유료 서비스 예정</div>
+                    </div>
+                </div>
+                
+                <button onclick="generatePDFs()" style="width:100%;background:#4F46E5;color:white;padding:14px;border-radius:10px;border:none;font-size:16px;font-weight:600;cursor:pointer;">
+                    📄 선택한 서류 PDF 생성하기
+                </button>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // URL 파라미터 및 localStorage에서 데이터 로드
+        function loadFromMainPage() {
+            const params = new URLSearchParams(window.location.search);
+            const userData = JSON.parse(localStorage.getItem('checkvisa_user_data') || '{}');
+            
+            const visaType = params.get('visaType') || userData.visaType || '';
+            const expiryDate = params.get('expiryDate') || userData.expiryDate || '';
+            
+            if (visaType) {
+                document.getElementById('visaType').value = visaType;
+            }
+            if (expiryDate) {
+                document.getElementById('expiryDate').value = expiryDate;
+            }
+        }
+
+        // 손으로 작성 토글
+        function toggleHandwrite(section) {
+            const checkbox = document.getElementById(section + 'Handwrite');
+            const fields = document.getElementById(section + 'Fields');
+            if (fields) {
+                fields.style.opacity = checkbox.checked ? '0.3' : '1';
+                fields.querySelectorAll('input, select, textarea').forEach(el => {
+                    el.disabled = checkbox.checked;
+                });
+            }
+        }
+
+        // 결혼여부 라디오 → 결혼일자 표시/숨김
+        function handleMaritalStatus() {
+            const isMarried = document.getElementById('married_yes')?.checked;
+            const dateSection = document.getElementById('marriageDateSection');
+            if (dateSection) dateSection.style.display = isMarried ? 'block' : 'none';
+        }
+
+        // 가족 체크박스 → 상세 입력 표시/숨김
+        function toggleFamilyMember(member) {
+            const checkboxId = member === 'spouse' ? 'hasSpouse'
+                : member === 'child1' ? 'hasChild1'
+                : member === 'child2' ? 'hasChild2'
+                : 'hasChild3';
+            const detailId = member === 'spouse' ? 'spouseDetail'
+                : member === 'child1' ? 'child1Detail'
+                : member === 'child2' ? 'child2Detail'
+                : 'child3Detail';
+
+            const isChecked = document.getElementById(checkboxId)?.checked;
+            const detail = document.getElementById(detailId);
+            if (detail) detail.style.display = isChecked ? 'block' : 'none';
+        }
+
+        // 가족 추가 함수 제거 (더 이상 사용하지 않음)
+        // let familyCount = 1;
+        // function addFamilyMember() { ... }
+
+        // 비자 타입 변경 시 E-7 카드 자동 강조
+        document.getElementById('visaType').addEventListener('change', function() {
+            const val = this.value.toUpperCase();
+            const isE7 = val.startsWith('E-7') || val.startsWith('E7');
+            
+            ['card-profile-e74', 'card-score-e74'].forEach(cardId => {
+                const card = document.getElementById(cardId);
+                if (!card) return;
+                const existing = card.querySelector('.e74-banner');
+                if (isE7 && !existing) {
+                    const banner = document.createElement('div');
+                    banner.className = 'e74-banner';
+                    banner.textContent = '⭐ E-7 비자에 필요한 서류입니다 — 확인하세요';
+                    card.querySelector('.form-card-header').after(banner);
+                } else if (!isE7 && existing) {
+                    existing.remove();
+                }
+            });
+        });
+
+        // 중앙부처/광역지자체 상호배타 처리
+        function handleGovBonus(selected) {
+            if (selected === 'central' && document.getElementById('bonus_central').checked) {
+                document.getElementById('bonus_regional').checked = false;
+            } else if (selected === 'regional' && document.getElementById('bonus_regional').checked) {
+                document.getElementById('bonus_central').checked = false;
+            }
+            calculateScore();
+        }
+
+        // E-7-4 점수 계산
+        function calculateScore() {
+            let total = 0;
+            
+            // 1. 소득 점수 (최대 120점)
+            const income = parseInt(document.getElementById('incomeRange')?.value || '0');
+            const incomeScores = {0:0, 2500:50, 3000:65, 3500:80, 4000:95, 4500:110, 5000:120};
+            const incomeScore = incomeScores[income] || 0;
+            total += incomeScore;
+            
+            // 2. 한국어 능력 (최대 120점)
+            const langLevel = parseInt(document.getElementById('langLevel')?.value || '0');
+            const langCert = document.getElementById('langCertType')?.value || 'none';
+            let langScore = 0;
+            if (langCert !== 'none') {
+                if (langLevel >= 4) langScore = 120;
+                else if (langLevel === 3) langScore = 80;
+                else if (langLevel === 2) langScore = 50;
+            }
+            total += langScore;
+            
+            // 3. 연령 점수 (최대 60점)
+            const birthDate = document.getElementById('birthDate')?.value;
+            let ageScore = 0;
+            if (birthDate) {
+                const age = Math.floor((new Date() - new Date(birthDate)) / (365.25 * 24 * 60 * 60 * 1000));
+                if (age >= 27 && age <= 33) ageScore = 60;
+                else if (age >= 19 && age <= 26) ageScore = 40;
+                else if (age >= 34 && age <= 40) ageScore = 30;
+                else if (age >= 41) ageScore = 10;
+            }
+            total += ageScore;
+            
+            // 4. 가점
+            let bonusTotal = 0;
+            const bonusIds = ['bonus_central','bonus_regional','bonus_employer','bonus_tenure','bonus_depop','bonus_cert','bonus_driver'];
+            const bonusPoints = {bonus_central:30, bonus_regional:30, bonus_employer:50, bonus_tenure:20, bonus_depop:20, bonus_cert:20, bonus_driver:10};
+            bonusIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el?.checked) bonusTotal += bonusPoints[id];
+            });
+            total += bonusTotal;
+            
+            // 5. 벌점
+            const fineCount = parseInt(document.getElementById('penalty_fine')?.value || '0');
+            const taxCount = parseInt(document.getElementById('penalty_tax')?.value || '0');
+            const immigCount = parseInt(document.getElementById('penalty_immig')?.value || '0');
+            const fineDeduct = [0,5,10,20][Math.min(fineCount,3)];
+            const taxDeduct = [0,5,10,15][Math.min(taxCount,3)];
+            const immigDeduct = [0,5,10,15][Math.min(immigCount,3)];
+            const penaltyTotal = fineDeduct + taxDeduct + immigDeduct;
+            total -= penaltyTotal;
+            
+            // UI 업데이트
+            const incomeBadge = document.getElementById('incomeScoreBadge');
+            if (incomeBadge) {
+                incomeBadge.textContent = incomeScore + '점';
+                incomeBadge.style.background = incomeScore > 0 ? '#dcfce7' : '#e5e7eb';
+                incomeBadge.style.color = incomeScore > 0 ? '#16a34a' : '#6b7280';
+            }
+            
+            const langBadge = document.getElementById('langScoreBadge');
+            if (langBadge) {
+                langBadge.textContent = langScore + '점';
+                langBadge.style.background = langScore > 0 ? '#dcfce7' : '#e5e7eb';
+                langBadge.style.color = langScore > 0 ? '#16a34a' : '#6b7280';
+            }
+            
+            const ageBadge = document.getElementById('ageScoreBadge');
+            if (ageBadge) {
+                ageBadge.textContent = ageScore + '점';
+                ageBadge.style.background = ageScore > 0 ? '#dcfce7' : '#e5e7eb';
+                ageBadge.style.color = ageScore > 0 ? '#16a34a' : '#6b7280';
+            }
+            
+            const bonusBadge = document.getElementById('bonusScoreBadge');
+            if (bonusBadge) {
+                bonusBadge.textContent = '+' + bonusTotal + '점';
+            }
+            
+            const penaltyBadge = document.getElementById('penaltyScoreBadge');
+            if (penaltyBadge) {
+                penaltyBadge.textContent = '-' + penaltyTotal + '점';
+            }
+            
+            const totalEl = document.getElementById('scoreTotal');
+            if (totalEl) {
+                totalEl.textContent = total + '점';
+                totalEl.style.color = total >= 200 ? '#16a34a' : '#dc2626';
+            }
+            
+            const msgEl = document.getElementById('scoreMessage');
+            if (msgEl) {
+                msgEl.textContent = total >= 200
+                    ? '✅ E-7-4 신청 가능 (200점 이상)'
+                    : `❌ ${200 - total}점 부족 (200점 이상 필요)`;
+                msgEl.style.color = total >= 200 ? '#16a34a' : '#dc2626';
+            }
+            
+            return { total, incomeScore, langScore, ageScore, bonusTotal, penaltyTotal };
+        }
+
+        // PDF 생성 함수
+        async function generatePDFs() {
+            console.log('=================================');
+            console.log('[DEBUG] generatePDFs 함수 호출됨!');
+            console.log('=================================');
+            
+            // 라이브러리 확인
+            if (typeof PDFLib === 'undefined') {
+                alert('❌ PDF-lib 라이브러리가 로드되지 않았습니다.');
+                return;
+            }
+            if (typeof fontkit === 'undefined') {
+                alert('❌ fontkit 라이브러리가 로드되지 않았습니다.');
+                return;
+            }
+            if (typeof JSZip === 'undefined') {
+                alert('❌ JSZip 라이브러리가 로드되지 않았습니다.');
+                return;
+            }
+            if (typeof saveAs === 'undefined') {
+                alert('❌ FileSaver 라이브러리가 로드되지 않았습니다.');
+                return;
+            }
+            
+            // 선택된 서류 체크
+            const selectedForms = [];
+            if (document.getElementById('check-integrated')?.checked) selectedForms.push('integrated');
+            if (document.getElementById('check-residence')?.checked) selectedForms.push('residence');
+            if (document.getElementById('check-guarantor')?.checked) selectedForms.push('guarantor');
+            if (document.getElementById('check-overseas')?.checked) selectedForms.push('overseas');
+            if (document.getElementById('check-profile-e74')?.checked) selectedForms.push('profile-e74');
+            if (document.getElementById('check-score-e74')?.checked) selectedForms.push('score-e74');
+
+            console.log('선택된 서류:', selectedForms);
+
+            if (selectedForms.length === 0) {
+                alert('📋 서류를 하나 이상 선택해주세요.');
+                return;
+            }
+
+            // 구현된 서류만 처리 (통합신청서, 거주숙소제공확인서, 신원보증서)
+            const implemented = ['integrated', 'residence', 'guarantor'];
+            const notReady = selectedForms.filter(f => !implemented.includes(f));
+            
+            if (notReady.length > 0) {
+                const formNames = {
+                    'overseas': '거소신고(신청)서',
+                    'profile-e74': 'E-7-4 신상기술서',
+                    'score-e74': 'E-7-4 점수제 심사표'
+                };
+                alert('⏳ 아래 서식은 곧 제공됩니다:\n\n' + notReady.map(f => formNames[f]).join('\n'));
+            }
+
+            const selectedImplemented = selectedForms.filter(f => implemented.includes(f));
+            console.log('구현된 서류:', selectedImplemented);
+            
+            if (selectedImplemented.length === 0) {
+                return;
+            }
+
+            try {
+                const loadingMsg = document.createElement('div');
+                loadingMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:30px 50px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.2);z-index:9999;font-size:16px;font-weight:600;color:#4F46E5;';
+                loadingMsg.textContent = '📄 PDF 생성 중...';
+                document.body.appendChild(loadingMsg);
+
+                const pdfs = [];
+                
+                if (selectedImplemented.includes('integrated')) {
+                    const pdfData = await generateIntegratedForm();
+                    pdfs.push({ name: '통합신청서.pdf', data: pdfData });
+                }
+                
+                if (selectedImplemented.includes('residence')) {
+                    const pdfData = await generateResidenceForm();
+                    pdfs.push({ name: '거주숙소제공확인서.pdf', data: pdfData });
+                }
+                
+                if (selectedImplemented.includes('guarantor')) {
+                    const pdfData = await generateGuarantorForm();
+                    pdfs.push({ name: '신원보증서.pdf', data: pdfData });
+                }
+
+                document.body.removeChild(loadingMsg);
+
+                // 다운로드
+                if (pdfs.length === 1) {
+                    const blob = new Blob([pdfs[0].data], { type: 'application/pdf' });
+                    saveAs(blob, pdfs[0].name);
+                } else {
+                    const zip = new JSZip();
+                    pdfs.forEach(pdf => zip.file(pdf.name, pdf.data));
+                    const zipBlob = await zip.generateAsync({ type: 'blob' });
+                    saveAs(zipBlob, 'CheckVisa_서류.zip');
+                }
+
+                alert('✅ PDF 생성 완료!\n\n다운로드 폴더를 확인해주세요.');
+            } catch (error) {
+                console.error('PDF 생성 오류:', error);
+                alert('❌ PDF 생성 중 오류가 발생했습니다.\n\n' + error.message);
+            }
+        }
+        
+        // ⚠️ 함수를 전역에 명시적으로 노출 (버튼 onclick에서 호출 가능하도록)
+        window.generatePDFs = generatePDFs;
+
+        // 한글 폰트 로드 함수
+        async function loadKoreanFont() {
+            const fontSources = [
+                '/selfvisa/fonts/NanumGothic.ttf',
+                'https://cdn.jsdelivr.net/npm/nanum-gothic@1.0.2/fonts/NanumGothic.ttf',
+                'https://fonts.gstatic.com/ea/nanumgothic/v5/NanumGothic-Regular.ttf'
+            ];
+            
+            for (const src of fontSources) {
+                try {
+                    const res = await fetch(src);
+                    if (!res.ok) continue;
+                    const fontBytes = await res.arrayBuffer();
+                    console.log('✅ 한국어 폰트 로딩 성공:', src);
+                    return fontBytes;
+                } catch (e) {
+                    console.warn('폰트 로딩 실패:', src, e.message);
+                }
+            }
+            
+            // 최후 fallback
+            console.error('❌ 한국어 폰트 로딩 실패');
+            throw new Error('한국어 폰트를 로드할 수 없습니다.');
+        }
+
+        // ════════════════════════════════════════════════════════
+        // Fillable PDF 헬퍼 함수들
+        // ════════════════════════════════════════════════════════
+        
+        // 생년월일 파싱 함수
+        function parseDateParts(dateStr) {
+            if (!dateStr) return { year: '', month: '', day: '' };
+            
+            const isoMatch = dateStr.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+            if (isoMatch) {
+                return {
+                    year: isoMatch[1],
+                    month: isoMatch[2].padStart(2, '0'),
+                    day: isoMatch[3].padStart(2, '0')
+                };
+            }
+            
+            if (dateStr.length === 8 && /^\d{8}$/.test(dateStr)) {
+                return {
+                    year: dateStr.slice(0, 4),
+                    month: dateStr.slice(4, 6),
+                    day: dateStr.slice(6, 8)
+                };
+            }
+            
+            return { year: dateStr, month: '', day: '' };
+        }
+        
+        // 여권 날짜 포맷 함수
+        function formatPassportDate(dateStr) {
+            if (!dateStr) return '';
+            const m = dateStr.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+            if (m) return `${m[1]}${m[2].padStart(2, '0')}${m[3].padStart(2, '0')}`;
+            return dateStr;
+        }
+        
+        // 외국인등록번호 포맷 함수
+        function formatAlienRegNo(value) {
+            if (!value) return '';
+            const clean = value.replace(/[^0-9]/g, '');
+            if (clean.length === 13) {
+                return `${clean.slice(0, 6)}-${clean.slice(6)}`;
+            }
+            return value;
+        }
+        
+        // 신청 유형 매핑
+        const APPLICATION_TYPE_MAP = {
+            'foreignRegistration': '외국인등록',
+            'activityPermit': '체류자격 외 활동허가',
+            'changeWorkplace': '근무처변경·추가허가/신고',
+            'extendStay': '체류자격 연장허가',
+            'changeStatus': '체류자격 변경허가',
+            'grantStatus': '체류자격 부여',
+            'changeAddress': '체류지 변경신고',
+        };
+
+        // 통합신청서 - 서버 API 방식 (python-docx + LibreOffice 기반, 출입국서식과 동일)
+        async function generateIntegratedForm() {
+            // 폼 데이터 수집 (실제 필드 ID에 맞춤)
+            const birthDate = document.getElementById('birthDate')?.value || '';
+            let birth_year = '', birth_month = '', birth_day = '';
+            if (birthDate) {
+                const parts = birthDate.split('-');
+                if (parts.length === 3) {
+                    birth_year = parts[0];
+                    birth_month = parts[1];
+                    birth_day = parts[2];
+                }
+            }
+            
+            const passportIssue = document.getElementById('passportIssue')?.value || '';
+            const passportExpiry = document.getElementById('passportExpiry')?.value || '';
+            
+            const today = new Date();
+            const appDate = `${today.getFullYear()}년 ${String(today.getMonth()+1).padStart(2,'0')}월 ${String(today.getDate()).padStart(2,'0')}일`;
+            
+            // 신청 유형 매핑 (HTML radio value → API application_type)
+            const appTypeMap = {
+                'extension':   'extension',
+                'change':      'status_change',
+                'grant':       'status_grant',
+                'workplace':   'workplace_chg',
+                'residence':   'reg_change',
+                'alien_reg':   'registration',
+            };
+            const rawType = document.querySelector('input[name="applicationType"]:checked')?.value || 'extension';
+            const appType = appTypeMap[rawType] || 'extension';
+            
+            const payload = {
+                application_type:  appType,
+                surname:           (document.getElementById('surnameEn')?.value || '').toUpperCase().trim(),
+                given_names:       (document.getElementById('givenNameEn')?.value || '').toUpperCase().trim(),
+                birth_year:        birth_year,
+                birth_month:       birth_month,
+                birth_day:         birth_day,
+                sex:               document.getElementById('gender')?.value || '',
+                nationality:       (document.getElementById('nationality')?.value || '').toUpperCase().trim(),
+                alien_reg_no:      (document.getElementById('alienRegNum')?.value || '').trim(),
+                passport_no:       (document.getElementById('passportNum')?.value || '').trim(),
+                passport_issue:    passportIssue,
+                passport_expiry:   passportExpiry,
+                address_korea:     (document.getElementById('address')?.value || '').trim(),
+                phone:             (document.getElementById('phone')?.value || '').trim(),
+                cell_phone:        (document.getElementById('cellPhone')?.value || '').trim(),
+                address_home:      '',
+                phone_home:        '',
+                application_date:  appDate,
+            };
+            
+            // 서버 API 호출
+            const response = await fetch('/selfvisa/api/generate-pdf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err.error || `서버 오류 (${response.status})`);
+            }
+            
+            // ArrayBuffer로 반환 (다른 PDF와 동일한 방식으로 처리)
+            const arrayBuf = await response.arrayBuffer();
+            return new Uint8Array(arrayBuf);
+        }
+
+        // 2. 거주숙소제공확인서 생성
+        async function generateResidenceForm() {
+            const { PDFDocument, rgb } = PDFLib;
+            
+            const templateUrl = '/selfvisa/templates/거주숙소제공사실확인서(영문병기).pdf';
+            const existingPdfBytes = await fetch(templateUrl).then(res => res.arrayBuffer());
+            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+            
+            const fontBytes = await loadKoreanFont();
+            pdfDoc.registerFontkit(fontkit);
+            const font = await pdfDoc.embedFont(fontBytes);
+            
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[0];
+            const { width, height } = firstPage.getSize();
+            
+            // 폼 데이터 수집
+            const formData = {
+                // 거주자 정보
+                residentName: document.getElementById('koreanName')?.value || '',
+                residentNationality: document.getElementById('nationality')?.value || '',
+                residentBirthDate: document.getElementById('birthDate')?.value || '',
+                residentPassport: document.getElementById('passportNumber')?.value || '',
+                residentVisaType: document.getElementById('visaType')?.value || '',
+                
+                // 제공자 정보
+                providerName: document.getElementById('providerName')?.value || '',
+                providerPhone: document.getElementById('providerPhone')?.value || '',
+                providerAddress: document.getElementById('providerAddress')?.value || '',
+                providerRelation: document.querySelector('input[name="providerRelation"]:checked')?.value || '',
+                ownershipType: document.querySelector('input[name="ownershipType"]:checked')?.value || '',
+                housingType: document.querySelector('input[name="housingType"]:checked')?.value || '',
+                moveInDate: document.getElementById('moveInDate')?.value || ''
+            };
+            
+            const fontSize = 10;
+            const textColor = rgb(0, 0, 0);
+            
+            // 거주자 성명
+            if (formData.residentName) {
+                firstPage.drawText(formData.residentName, {
+                    x: 150, y: height - 200, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 거주자 국적
+            if (formData.residentNationality) {
+                firstPage.drawText(formData.residentNationality, {
+                    x: 350, y: height - 200, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 거주자 생년월일
+            if (formData.residentBirthDate) {
+                firstPage.drawText(formData.residentBirthDate, {
+                    x: 150, y: height - 230, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 거주자 여권번호
+            if (formData.residentPassport) {
+                firstPage.drawText(formData.residentPassport, {
+                    x: 350, y: height - 230, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 거주자 체류자격
+            if (formData.residentVisaType) {
+                firstPage.drawText(formData.residentVisaType, {
+                    x: 150, y: height - 260, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 제공자 성명
+            if (formData.providerName) {
+                firstPage.drawText(formData.providerName, {
+                    x: 150, y: height - 320, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 제공자 관계
+            if (formData.providerRelation) {
+                const relationMap = { '가족/친척': '가족·친척', '고용주': '고용주', '기타': '기타' };
+                firstPage.drawText(relationMap[formData.providerRelation] || formData.providerRelation, {
+                    x: 350, y: height - 320, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 제공자 연락처
+            if (formData.providerPhone) {
+                firstPage.drawText(formData.providerPhone, {
+                    x: 150, y: height - 350, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 숙소 주소
+            if (formData.providerAddress) {
+                const maxWidth = 400;
+                const lines = wrapText(formData.providerAddress, maxWidth, fontSize, font);
+                lines.forEach((line, i) => {
+                    firstPage.drawText(line, {
+                        x: 150, y: height - 380 - (i * 15), size: fontSize, font, color: textColor
+                    });
+                });
+            }
+            
+            // 소유 형태
+            if (formData.ownershipType) {
+                const ownerMap = { '자가': '자가', '임대': '임대', '기타': '기타' };
+                firstPage.drawText(ownerMap[formData.ownershipType] || formData.ownershipType, {
+                    x: 150, y: height - 430, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 주거 형태
+            if (formData.housingType) {
+                const houseMap = { '개인주택': '개인주택', '숙박시설': '숙박시설', '기숙사': '기숙사', '기타': '기타' };
+                firstPage.drawText(houseMap[formData.housingType] || formData.housingType, {
+                    x: 350, y: height - 430, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 입주일
+            if (formData.moveInDate) {
+                firstPage.drawText(formData.moveInDate, {
+                    x: 150, y: height - 460, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 작성일 (WinAnsi 인코딩 오류 방지: 한글 제거, YYYY.MM.DD 형식 사용)
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+            firstPage.drawText(dateStr, {
+                x: 400, y: 100, size: fontSize, font, color: textColor
+            });
+            
+            const pdfBytes = await pdfDoc.save();
+            return pdfBytes;
+        }
+
+        // 3. 신원보증서 생성
+        async function generateGuarantorForm() {
+            const { PDFDocument, rgb } = PDFLib;
+            
+            const templateUrl = '/selfvisa/templates/신원보증서(한글) (1).pdf';
+            const existingPdfBytes = await fetch(templateUrl).then(res => res.arrayBuffer());
+            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+            
+            const fontBytes = await loadKoreanFont();
+            pdfDoc.registerFontkit(fontkit);
+            const font = await pdfDoc.embedFont(fontBytes);
+            
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[0];
+            const { width, height } = firstPage.getSize();
+            
+            // 폼 데이터 수집
+            const formData = {
+                // 보증인 정보
+                guarantorName: document.getElementById('guarantorName')?.value || '',
+                guarantorNationality: document.getElementById('guarantorNationality')?.value || '',
+                guarantorGender: document.querySelector('input[name="guarantorGender"]:checked')?.value || '',
+                guarantorPassport: document.getElementById('guarantorPassport')?.value || '',
+                guarantorBirthDate: document.getElementById('guarantorBirthDate')?.value || '',
+                guarantorPhone: document.getElementById('guarantorPhone')?.value || '',
+                guarantorAddress: document.getElementById('guarantorAddress')?.value || '',
+                guarantorRelation: document.getElementById('guarantorRelation')?.value || '',
+                guarantorCompany: document.getElementById('guarantorCompany')?.value || '',
+                guarantorPosition: document.getElementById('guarantorPosition')?.value || '',
+                guarantorCompanyAddress: document.getElementById('guarantorCompanyAddress')?.value || '',
+                guarantorPeriodFrom: document.getElementById('guarantorPeriodFrom')?.value || '',
+                guarantorPeriodTo: document.getElementById('guarantorPeriodTo')?.value || '',
+                
+                // 피보증인 정보 (기본 정보에서)
+                beneficiaryName: document.getElementById('koreanName')?.value || '',
+                beneficiaryNationality: document.getElementById('nationality')?.value || '',
+                beneficiaryBirthDate: document.getElementById('birthDate')?.value || '',
+                beneficiaryPassport: document.getElementById('passportNumber')?.value || ''
+            };
+            
+            const fontSize = 10;
+            const textColor = rgb(0, 0, 0);
+            
+            // 보증인 성명
+            if (formData.guarantorName) {
+                firstPage.drawText(formData.guarantorName, {
+                    x: 150, y: height - 180, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 보증인 국적
+            if (formData.guarantorNationality) {
+                firstPage.drawText(formData.guarantorNationality, {
+                    x: 350, y: height - 180, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 보증인 성별
+            if (formData.guarantorGender === '남') {
+                firstPage.drawText('✓', { x: 150, y: height - 210, size: fontSize, font, color: textColor });
+            } else if (formData.guarantorGender === '여') {
+                firstPage.drawText('✓', { x: 200, y: height - 210, size: fontSize, font, color: textColor });
+            }
+            
+            // 보증인 여권번호
+            if (formData.guarantorPassport) {
+                firstPage.drawText(formData.guarantorPassport, {
+                    x: 150, y: height - 240, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 보증인 생년월일
+            if (formData.guarantorBirthDate) {
+                firstPage.drawText(formData.guarantorBirthDate, {
+                    x: 350, y: height - 240, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 보증인 연락처
+            if (formData.guarantorPhone) {
+                firstPage.drawText(formData.guarantorPhone, {
+                    x: 150, y: height - 270, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 보증인 주소
+            if (formData.guarantorAddress) {
+                const maxWidth = 400;
+                const lines = wrapText(formData.guarantorAddress, maxWidth, fontSize, font);
+                lines.forEach((line, i) => {
+                    firstPage.drawText(line, {
+                        x: 150, y: height - 300 - (i * 15), size: fontSize, font, color: textColor
+                    });
+                });
+            }
+            
+            // 피보증인과의 관계
+            if (formData.guarantorRelation) {
+                firstPage.drawText(formData.guarantorRelation, {
+                    x: 150, y: height - 350, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 보증인 근무처
+            if (formData.guarantorCompany) {
+                firstPage.drawText(formData.guarantorCompany, {
+                    x: 150, y: height - 380, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 보증인 직위
+            if (formData.guarantorPosition) {
+                firstPage.drawText(formData.guarantorPosition, {
+                    x: 350, y: height - 380, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 보증인 근무처 주소
+            if (formData.guarantorCompanyAddress) {
+                const maxWidth = 400;
+                const lines = wrapText(formData.guarantorCompanyAddress, maxWidth, fontSize, font);
+                lines.forEach((line, i) => {
+                    firstPage.drawText(line, {
+                        x: 150, y: height - 410 - (i * 15), size: fontSize, font, color: textColor
+                    });
+                });
+            }
+            
+            // 보증기간
+            if (formData.guarantorPeriodFrom && formData.guarantorPeriodTo) {
+                const periodStr = `${formData.guarantorPeriodFrom} ~ ${formData.guarantorPeriodTo}`;
+                firstPage.drawText(periodStr, {
+                    x: 150, y: height - 460, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 피보증인 성명
+            if (formData.beneficiaryName) {
+                firstPage.drawText(formData.beneficiaryName, {
+                    x: 150, y: height - 520, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 피보증인 국적
+            if (formData.beneficiaryNationality) {
+                firstPage.drawText(formData.beneficiaryNationality, {
+                    x: 350, y: height - 520, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 피보증인 생년월일
+            if (formData.beneficiaryBirthDate) {
+                firstPage.drawText(formData.beneficiaryBirthDate, {
+                    x: 150, y: height - 550, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 피보증인 여권번호
+            if (formData.beneficiaryPassport) {
+                firstPage.drawText(formData.beneficiaryPassport, {
+                    x: 350, y: height - 550, size: fontSize, font, color: textColor
+                });
+            }
+            
+            // 작성일 (WinAnsi 인코딩 오류 방지: 한글 제거, YYYY.MM.DD 형식 사용)
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+            firstPage.drawText(dateStr, {
+                x: 400, y: 100, size: fontSize, font, color: textColor
+            });
+            
+            // 보증인 서명란 (실제로는 수기 서명 영역) - 한글 제거
+            firstPage.drawText('Guarantor: ' + (formData.guarantorName || '___________'), {
+                x: 350, y: 70, size: fontSize, font, color: textColor
+            });
+            
+            const pdfBytes = await pdfDoc.save();
+            return pdfBytes;
+        }
+
+        // 텍스트 줄바꿈 헬퍼 함수
+        function wrapText(text, maxWidth, fontSize, font) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+            
+            words.forEach(word => {
+                const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+                
+                if (testWidth > maxWidth && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            });
+            
+            if (currentLine) {
+                lines.push(currentLine);
+            }
+            
+            return lines;
+        }
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 데이터 로드
+            loadFromMainPage();
+            
+            // 카드 선택/해제 처리 이벤트 등록
+            document.querySelectorAll('.form-card-header').forEach(header => {
+                header.addEventListener('click', function(e) {
+                    if (e.target.type === 'checkbox') return;
+                    const checkbox = header.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                });
+            });
+
+            document.querySelectorAll('.form-card-body input, .form-card-body select, .form-card-body textarea').forEach(el => {
+                el.addEventListener('click', e => e.stopPropagation());
+            });
+
+            document.querySelectorAll('.form-card input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const card = cb.closest('.form-card');
+                    if (cb.checked) {
+                        card.classList.add('selected');
+                    } else {
+                        card.classList.remove('selected');
+                    }
+                });
+            });
+
+            // 초기 선택 상태 반영
+            document.querySelectorAll('.form-card input[type="checkbox"]:checked').forEach(cb => {
+                cb.closest('.form-card').classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html>
