@@ -1,0 +1,7 @@
+Flask==3.0.0
+flask-cors==4.0.0
+python-docx==0.8.11
+pypdf==4.0.0
+lxml==4.9.3
+Werkzeug==3.0.1
+gunicorn==21.2.0
