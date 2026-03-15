@@ -964,6 +964,11 @@
     </div>
 
     <script>
+        // ============================================
+        // API 설정
+        // ============================================
+        const SELFVISA_API_URL = 'https://checkvisa.onrender.com/api/generate-pdf';
+        
         // URL 파라미터 및 localStorage에서 데이터 로드
         function loadFromMainPage() {
             const params = new URLSearchParams(window.location.search);
@@ -1213,8 +1218,8 @@
 
             try {
                 const loadingMsg = document.createElement('div');
-                loadingMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:30px 50px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.2);z-index:9999;font-size:16px;font-weight:600;color:#4F46E5;';
-                loadingMsg.textContent = '📄 PDF 생성 중...';
+                loadingMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:30px 50px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.2);z-index:9999;font-size:16px;font-weight:600;color:#4F46E5;text-align:center;';
+                loadingMsg.innerHTML = '📄 PDF 생성 중...<br><span style="font-size:13px;font-weight:400;color:#6b7280;margin-top:8px;display:block;">첫 사용 시 최대 1분 소요될 수 있습니다.</span>';
                 document.body.appendChild(loadingMsg);
 
                 const pdfs = [];
@@ -1393,7 +1398,7 @@
             };
             
             // 서버 API 호출
-            const response = await fetch('/selfvisa/api/generate-pdf', {
+            const response = await fetch(SELFVISA_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
