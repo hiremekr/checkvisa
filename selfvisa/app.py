@@ -15,16 +15,12 @@ from pdf_generator import fill_form
 
 app = Flask(__name__)
 
-# CORS 설정 - checkvisa.co.kr에서 API 호출 가능하게
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "https://checkvisa.co.kr",
-            "http://localhost:*",
-            "http://127.0.0.1:*"
-        ]
-    }
-})
+# CORS 설정 - 모든 checkvisa 도메인에서 API 호출 가능하게
+CORS(app, 
+     origins=["https://checkvisa.co.kr", "https://www.checkvisa.co.kr", "https://*.pages.dev"],
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "OPTIONS"],
+     supports_credentials=True)
 
 # 루트 경로
 @app.route('/')

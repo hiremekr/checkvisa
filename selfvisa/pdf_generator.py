@@ -57,8 +57,10 @@ def write_cell(cell, text):
     rPr = run._element.get_or_add_rPr()
     rFonts = rPr.find(qn('w:rFonts'))
     if rFonts is None: rFonts = OxmlElement('w:rFonts'); rPr.insert(0, rFonts)
+    # 나눔고딕 또는 Malgun Gothic (Docker 환경에서 나눔고딕 사용)
+    font_name = 'NanumGothic'
     for attr in ['w:ascii', 'w:eastAsia', 'w:hAnsi', 'w:cs']:
-        rFonts.set(qn(attr), 'Malgun Gothic')
+        rFonts.set(qn(attr), font_name)
     for local, val in [('w:sz', '18'), ('w:szCs', '18')]:
         e = rPr.find(qn(local))
         if e is None: e = OxmlElement(local); rPr.append(e)
@@ -80,8 +82,10 @@ def write_digit_cell(cell, digit):
     rPr = run._element.get_or_add_rPr()
     rFonts = rPr.find(qn('w:rFonts'))
     if rFonts is None: rFonts = OxmlElement('w:rFonts'); rPr.insert(0, rFonts)
+    # 나눔고딕 또는 Malgun Gothic (Docker 환경에서 나눔고딕 사용)
+    font_name = 'NanumGothic'
     for attr in ['w:ascii', 'w:eastAsia', 'w:hAnsi', 'w:cs']:
-        rFonts.set(qn(attr), 'Malgun Gothic')
+        rFonts.set(qn(attr), font_name)
     pPr = para._p.find(qn('w:pPr'))
     if pPr is None: pPr = OxmlElement('w:pPr'); para._p.insert(0, pPr)
     sp = pPr.find(qn('w:spacing'))
