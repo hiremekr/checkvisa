@@ -461,7 +461,51 @@
                     
                     <div>
                         <label class="block text-sm font-bold text-slate-900 mb-2">비자 종류 <span class="text-red-600">*</span></label>
-                        <input type="text" id="modal-visa-type" name="visa_type" required readonly class="w-full p-3 border-2 border-slate-300 rounded-lg bg-slate-50">
+                        <select id="modal-visa-type" name="visa_type" required class="w-full p-3 border-2 border-slate-300 rounded-lg focus:border-indigo-600 focus:outline-none">
+                            <option value="">선택해주세요</option>
+                            <optgroup label="취업비자">
+                                <option value="E-1">E-1 (교수)</option>
+                                <option value="E-2">E-2 (회화지도)</option>
+                                <option value="E-3">E-3 (연구)</option>
+                                <option value="E-4">E-4 (기술지도)</option>
+                                <option value="E-5">E-5 (전문직업)</option>
+                                <option value="E-6">E-6 (예술흥행)</option>
+                                <option value="E-7">E-7 (특정활동)</option>
+                                <option value="E-8">E-8 (계절근로)</option>
+                                <option value="E-9">E-9 (비전문취업)</option>
+                                <option value="E-10">E-10 (선원취업)</option>
+                            </optgroup>
+                            <optgroup label="거주/결혼">
+                                <option value="F-1">F-1 (방문동거)</option>
+                                <option value="F-2">F-2 (거주)</option>
+                                <option value="F-3">F-3 (동반)</option>
+                                <option value="F-4">F-4 (재외동포)</option>
+                                <option value="F-5">F-5 (영주)</option>
+                                <option value="F-6">F-6 (결혼이민)</option>
+                            </optgroup>
+                            <optgroup label="방문/관광">
+                                <option value="B-1">B-1 (사증면제)</option>
+                                <option value="B-2">B-2 (관광통과)</option>
+                                <option value="C-3">C-3 (단기방문)</option>
+                            </optgroup>
+                            <optgroup label="유학">
+                                <option value="D-2">D-2 (유학)</option>
+                                <option value="D-4">D-4 (일반연수)</option>
+                            </optgroup>
+                            <optgroup label="기타">
+                                <option value="D-1">D-1 (문화예술)</option>
+                                <option value="D-3">D-3 (기업투자)</option>
+                                <option value="D-5">D-5 (취재)</option>
+                                <option value="D-6">D-6 (종교)</option>
+                                <option value="D-7">D-7 (주재)</option>
+                                <option value="D-8">D-8 (기업투자)</option>
+                                <option value="D-9">D-9 (무역경영)</option>
+                                <option value="D-10">D-10 (구직)</option>
+                                <option value="G-1">G-1 (기타)</option>
+                                <option value="H-1">H-1 (관광취업)</option>
+                                <option value="H-2">H-2 (방문취업)</option>
+                            </optgroup>
+                        </select>
                     </div>
                     
                     <div>
@@ -835,14 +879,13 @@
             const visaType = document.getElementById('visa-type').value;
             const expiryDate = document.getElementById('expiry-date').value;
             
-            if (!visaType || !expiryDate) {
-                alert('먼저 비자 종류와 만료일을 입력한 후 D-Day를 계산해주세요.');
-                return;
+            // 계산기를 사용했으면 자동 입력, 아니면 빈 값
+            if (visaType) {
+                document.getElementById('modal-visa-type').value = visaType;
             }
-            
-            // 모달 필드에 자동 입력
-            document.getElementById('modal-visa-type').value = visaType;
-            document.getElementById('modal-expiry-date').value = expiryDate;
+            if (expiryDate) {
+                document.getElementById('modal-expiry-date').value = expiryDate;
+            }
             
             modalOverlay.classList.add('active');
         });
