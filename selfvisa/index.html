@@ -1411,6 +1411,7 @@
             };
 
             // ── 1. 체크박스 ─────────────────────────────────────────────
+            console.log('appType:', appType, 'rawType:', rawType);
             const checkboxMap = {
                 registration:    [62,  141],
                 activity_permit: [220, 141],
@@ -1429,8 +1430,8 @@
             }
 
             // ── 2. 성명 (가운데 맞춤) ────────────────────────────────────
-            drawCenter(238, 312, surname);
-            drawCenter(372, 312, givenNames);
+            drawCenter(210, 312, surname);
+            drawCenter(344, 312, givenNames);
 
             // ── 3. 생년월일 / 성별 / 국적 ────────────────────────────────
             draw(181, 341, birth_year);
@@ -1451,7 +1452,7 @@
             draw(487, 377, passportExpiry);
 
             // ── 6. 대한민국 내 주소 ───────────────────────────────────────
-            draw(185, 399, addressKorea, 8);
+            draw(185, 399, addressKorea, 10);
 
             // ── 7. 전화번호 / 휴대전화 ───────────────────────────────────
             draw(185, 417, phone);
