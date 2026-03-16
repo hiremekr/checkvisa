@@ -1571,7 +1571,7 @@
 
             // ── PDF 및 폰트 로드 ─────────────────────────────────────────
             const [pdfBytes, fontBytes] = await Promise.all([
-                fetch('/selfvisa/assets/거주숙소제공사실확인서_영문병기__sample.pdf').then(r => r.arrayBuffer()),
+                fetch('/selfvisa/assets/residence_confirmation.pdf').then(r => r.arrayBuffer()),
                 fetch('/selfvisa/fonts/NanumGothicBold.ttf').then(r => r.arrayBuffer()),
             ]);
 
