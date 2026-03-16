@@ -355,6 +355,13 @@
                                 <label><input type="radio" name="applicationType" value="alien_reg"> 외국인 등록</label>
                             </div>
                             <div style="margin-top:12px;">
+                                <label style="font-size:13px;">
+                                    <input type="checkbox" id="includeAppDate"> 
+                                    신청일 포함 &nbsp;
+                                    <input type="date" id="applicationDate" style="font-size:13px; border:1px solid #d1d5db; border-radius:4px; padding:2px 6px;">
+                                </label>
+                            </div>
+                            <div style="margin-top:12px;">
                                 <label class="field-label">체류 목적 / 비고 (선택)</label>
                                 <textarea id="applicationPurpose" rows="2" class="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="예: 동일 고용주 하에 체류기간 연장 신청"></textarea>
                             </div>
@@ -1468,7 +1475,20 @@
             // ── 8. 본국 주소 (선택) ───────────────────────────────────────
             if (addressHome) draw(191, 433, addressHome, 8);
 
-            // ── 9. 신청인 성명 (서명란 오른쪽) ───────────────────────────
+            // ── 9. 신청일 (체크박스 선택 시만) ───────────────────────────
+            const includeDate = document.getElementById('includeAppDate')?.checked;
+            if (includeDate) {
+                const dateVal = document.getElementById('applicationDate')?.value || '';
+                if (dateVal) {
+                    const [y2, m2, d2] = dateVal.split('-');
+                    draw(130, 582, `${y2}년 ${m2}월 ${d2}일`, 9);
+                }
+            }
+
+            // ── 10. 행정정보 공동이용 동의서 - 신청인 성명 (가장 왼쪽 서명란) ──
+            draw(68, 648, `${surname} ${givenNames}`.trim(), 8);
+
+            // ── 11. 신청인 성명 (서명란 오른쪽) ──────────────────────────
             draw(445, 586, `${surname} ${givenNames}`.trim(), 8);
 
             // ── 완성된 PDF 반환 ───────────────────────────────────────────
