@@ -1487,12 +1487,12 @@
                 const dateVal = document.getElementById('applicationDate')?.value || '';
                 if (dateVal) {
                     const [y2, m2, d2] = dateVal.split('-');
-                    draw(130, 582, `${y2}년 ${m2}월 ${d2}일`, 9);
+                    draw(187, 582, `${y2}년 ${m2}월 ${d2}일`, 9);
                 }
             }
 
             // ── 10. 행정정보 공동이용 동의서 - 신청인 성명 (가장 왼쪽 서명란) ──
-            draw(102, 719, `${surname} ${givenNames}`.trim(), 8);
+            draw(102, 705, `${surname} ${givenNames}`.trim(), 8);
 
             // ── 11. 신청인 성명 (서명란 오른쪽) ──────────────────────────
             draw(445, 586, `${surname} ${givenNames}`.trim(), 8);
