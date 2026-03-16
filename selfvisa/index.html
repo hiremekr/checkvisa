@@ -1413,20 +1413,27 @@
             // ── 1. 체크박스 ─────────────────────────────────────────────
             console.log('appType:', appType, 'rawType:', rawType);
             const checkboxMap = {
-                registration:    [62,  141],
-                activity_permit: [220, 141],
-                reissue:         [61,  175],
-                workplace_chg:   [220, 175],
-                extension:       [61,  198],
-                reentry:         [220, 198],
-                status_change:   [61,  221],
-                residence:       [220, 221],
-                status_grant:    [61,  258],
-                reg_change:      [220, 258],
+                registration:    [62,  142],
+                activity_permit: [220, 142],
+                reissue:         [61,  176],
+                workplace_chg:   [220, 176],
+                extension:       [61,  199],
+                reentry:         [220, 199],
+                status_change:   [61,  222],
+                residence:       [220, 222],
+                status_grant:    [61,  259],
+                reg_change:      [220, 259],
             };
             if (checkboxMap[appType]) {
                 const [cx, cy] = checkboxMap[appType];
-                draw(cx + 1, cy + 1, '✓', 8);
+                const { height: H } = page.getSize();
+                page.drawText('v', {
+                    x: cx + 2,
+                    y: H - cy - 1,
+                    size: 7,
+                    font,
+                    color: rgb(0, 0, 0)
+                });
             }
 
             // ── 2. 성명 (가운데 맞춤) ────────────────────────────────────
