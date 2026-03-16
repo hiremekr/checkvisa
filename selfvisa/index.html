@@ -1199,7 +1199,7 @@
             // 선택된 서류 체크
             const selectedForms = [];
             if (document.getElementById('check-integrated')?.checked) selectedForms.push('integrated');
-            if (document.getElementById('check-residence')?.checked) selectedForms.push('residence');
+            if (document.getElementById('check-accommodation')?.checked) selectedForms.push('accommodation');
             if (document.getElementById('check-guarantor')?.checked) selectedForms.push('guarantor');
             if (document.getElementById('check-overseas')?.checked) selectedForms.push('overseas');
             if (document.getElementById('check-profile-e74')?.checked) selectedForms.push('profile-e74');
@@ -1213,7 +1213,7 @@
             }
 
             // 구현된 서류만 처리 (통합신청서, 거주숙소제공확인서, 신원보증서)
-            const implemented = ['integrated', 'residence', 'guarantor'];
+            const implemented = ['integrated', 'accommodation', 'guarantor'];
             const notReady = selectedForms.filter(f => !implemented.includes(f));
             
             if (notReady.length > 0) {
@@ -1245,7 +1245,7 @@
                     pdfs.push({ name: '통합신청서.pdf', data: pdfData });
                 }
                 
-                if (selectedImplemented.includes('residence')) {
+                if (selectedImplemented.includes('accommodation')) {
                     const pdfData = await generateResidenceForm();
                     pdfs.push({ name: '거주숙소제공확인서.pdf', data: pdfData });
                 }
