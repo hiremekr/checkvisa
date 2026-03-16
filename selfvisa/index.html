@@ -377,7 +377,6 @@
                                 <div style="color:#6b7280;font-size:13px;margin-top:2px;">고용주 또는 제3자가 숙소를 제공하는 경우 필요</div>
                                 <div style="margin-top:4px;">
                                     <span style="background:#dcfce7;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block;">무료</span>
-                                    <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block;margin-left:4px;">🔧 개발 예정</span>
                                 </div>
                             </div>
                         </div>
@@ -389,7 +388,31 @@
                                 </label>
                             </div>
                             <div id="accommodationFields">
-                                <p style="font-size:13px;font-weight:600;margin-bottom:12px;color:#1e3a5f;">숙소 제공자 정보</p>
+                                <p style="font-size:13px;font-weight:600;margin-bottom:12px;color:#1e3a5f;">1. 외국인 정보 (거주/숙소를 제공 받는 사람)</p>
+                                <div class="fields-grid-2">
+                                    <div class="field-group">
+                                        <label class="field-label">외국인 성명 *</label>
+                                        <input type="text" id="tenantName" placeholder="기본 정보에서 자동 입력">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">외국인 국적 *</label>
+                                        <input type="text" id="tenantNationality" placeholder="기본 정보에서 자동 입력">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">외국인등록번호</label>
+                                        <input type="text" id="tenantAlienReg" placeholder="000000-0000000">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">외국인 연락처 *</label>
+                                        <input type="tel" id="tenantPhone" placeholder="010-1234-5678">
+                                    </div>
+                                </div>
+                                <div class="field-group" style="margin-top:12px;">
+                                    <label class="field-label">외국인 주소 *</label>
+                                    <input type="text" id="tenantAddress" placeholder="서울시 강남구...">
+                                </div>
+                                
+                                <p style="font-size:13px;font-weight:600;margin-bottom:12px;margin-top:20px;color:#1e3a5f;">2. 숙소 제공자 정보</p>
                                 <div class="fields-grid-2">
                                     <div class="field-group">
                                         <label class="field-label">제공자 성명 *</label>
@@ -398,6 +421,10 @@
                                     <div class="field-group">
                                         <label class="field-label">제공자 국적 *</label>
                                         <input type="text" id="providerNationality" placeholder="대한민국">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">제공자 주민/외국인등록번호 *</label>
+                                        <input type="text" id="providerRegNo" placeholder="000000-0000000">
                                     </div>
                                     <div class="field-group">
                                         <label class="field-label">제공자 연락처 *</label>
@@ -410,13 +437,13 @@
                                     <label class="field-label">외국인과의 관계 *</label>
                                     <div class="radio-inline-group">
                                         <label class="radio-option">
-                                            <input type="radio" name="providerRelation" value="가족/친척" id="rel_family"> 가족/친척
+                                            <input type="radio" name="relationship" value="family"> 가족/친척
                                         </label>
                                         <label class="radio-option">
-                                            <input type="radio" name="providerRelation" value="고용주" id="rel_employer"> 고용주
+                                            <input type="radio" name="relationship" value="employer"> 고용주
                                         </label>
                                         <label class="radio-option">
-                                            <input type="radio" name="providerRelation" value="기타" id="rel_other"> 기타
+                                            <input type="radio" name="relationship" value="other"> 기타
                                         </label>
                                     </div>
                                 </div>
@@ -426,13 +453,13 @@
                                     <label class="field-label">소유형태 *</label>
                                     <div class="radio-inline-group">
                                         <label class="radio-option">
-                                            <input type="radio" name="ownershipType" value="자가" id="own_self"> 자가
+                                            <input type="radio" name="ownershipType" value="own"> 자가
                                         </label>
                                         <label class="radio-option">
-                                            <input type="radio" name="ownershipType" value="임대" id="own_rent"> 임대
+                                            <input type="radio" name="ownershipType" value="rent"> 임대
                                         </label>
                                         <label class="radio-option">
-                                            <input type="radio" name="ownershipType" value="기타" id="own_other"> 기타
+                                            <input type="radio" name="ownershipType" value="other"> 기타
                                         </label>
                                     </div>
                                 </div>
@@ -442,23 +469,34 @@
                                     <label class="field-label">주거형태 *</label>
                                     <div class="radio-inline-group">
                                         <label class="radio-option">
-                                            <input type="radio" name="housingType" value="개인주택" id="house_private"> 개인주택
+                                            <input type="radio" name="residenceType" value="private"> 개인주택 등
                                         </label>
                                         <label class="radio-option">
-                                            <input type="radio" name="housingType" value="숙박시설" id="house_lodging"> 숙박시설
+                                            <input type="radio" name="residenceType" value="hotel"> 숙박시설
                                         </label>
                                         <label class="radio-option">
-                                            <input type="radio" name="housingType" value="기숙사" id="house_dorm"> 기숙사
+                                            <input type="radio" name="residenceType" value="dorm"> 기숙사
                                         </label>
                                         <label class="radio-option">
-                                            <input type="radio" name="housingType" value="기타" id="house_other"> 기타
+                                            <input type="radio" name="residenceType" value="other"> 기타
                                         </label>
                                     </div>
                                 </div>
                                 
+                                <div class="fields-grid-2" style="margin-top:12px;">
+                                    <div class="field-group">
+                                        <label class="field-label">거주/숙소 제공 시작일 *</label>
+                                        <input type="date" id="accommodationStartDate">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">확인 날짜 *</label>
+                                        <input type="date" id="accommodationConfirmDate">
+                                    </div>
+                                </div>
+                                
                                 <div class="field-group" style="margin-top:12px;">
-                                    <label class="field-label">숙소 제공 시작일 *</label>
-                                    <input type="date" id="providerStartDate">
+                                    <label class="field-label">업체명 (선택)</label>
+                                    <input type="text" id="companyName" placeholder="회사명 또는 기관명">
                                 </div>
                             </div>
                         </div>
@@ -1531,143 +1569,111 @@
         }
 
         // 2. 거주숙소제공확인서 생성
+        // ============================================
+        // 거주/숙소제공 확인서 PDF 생성
+        // pdf-lib + NanumGothicBold 브라우저 직접 생성
+        // ============================================
         async function generateResidenceForm() {
             const { PDFDocument, rgb } = PDFLib;
-            
-            const templateUrl = '/selfvisa/templates/거주숙소제공사실확인서(영문병기).pdf';
-            const existingPdfBytes = await fetch(templateUrl).then(res => res.arrayBuffer());
-            const pdfDoc = await PDFDocument.load(existingPdfBytes);
-            
-            const fontBytes = await loadKoreanFont();
+
+            // ── 폼 데이터 수집 ───────────────────────────────────────────
+            const startDate = document.getElementById('accommodationStartDate')?.value || '';
+            let start_year = '', start_month = '', start_day = '';
+            if (startDate) {
+                [start_year, start_month, start_day] = startDate.split('-');
+            }
+
+            const confirmDate = document.getElementById('accommodationConfirmDate')?.value || '';
+            let confirm_year = '', confirm_month = '', confirm_day = '';
+            if (confirmDate) {
+                [confirm_year, confirm_month, confirm_day] = confirmDate.split('-');
+            }
+
+            const relationship  = document.querySelector('input[name="relationship"]:checked')?.value || '';
+            const ownershipType = document.querySelector('input[name="ownershipType"]:checked')?.value || '';
+            const residenceType = document.querySelector('input[name="residenceType"]:checked')?.value || '';
+
+            // ── PDF 및 폰트 로드 ─────────────────────────────────────────
+            const [pdfBytes, fontBytes] = await Promise.all([
+                fetch('/selfvisa/assets/거주숙소제공사실확인서_영문병기__sample.pdf').then(r => r.arrayBuffer()),
+                fetch('/selfvisa/fonts/NanumGothicBold.ttf').then(r => r.arrayBuffer()),
+            ]);
+
+            const pdfDoc = await PDFDocument.load(pdfBytes);
             pdfDoc.registerFontkit(fontkit);
             const font = await pdfDoc.embedFont(fontBytes);
-            
-            const pages = pdfDoc.getPages();
-            const firstPage = pages[0];
-            const { width, height } = firstPage.getSize();
-            
-            // 폼 데이터 수집
-            const formData = {
-                // 거주자 정보
-                residentName: document.getElementById('koreanName')?.value || '',
-                residentNationality: document.getElementById('nationality')?.value || '',
-                residentBirthDate: document.getElementById('birthDate')?.value || '',
-                residentPassport: document.getElementById('passportNumber')?.value || '',
-                residentVisaType: document.getElementById('visaType')?.value || '',
-                
-                // 제공자 정보
-                providerName: document.getElementById('providerName')?.value || '',
-                providerPhone: document.getElementById('providerPhone')?.value || '',
-                providerAddress: document.getElementById('providerAddress')?.value || '',
-                providerRelation: document.querySelector('input[name="providerRelation"]:checked')?.value || '',
-                ownershipType: document.querySelector('input[name="ownershipType"]:checked')?.value || '',
-                housingType: document.querySelector('input[name="housingType"]:checked')?.value || '',
-                moveInDate: document.getElementById('moveInDate')?.value || ''
+            const page = pdfDoc.getPages()[0];
+            const { height: H } = page.getSize();
+
+            const y = (top) => H - top;
+
+            const draw = (x, top, text, size = 11) => {
+                if (!text) return;
+                page.drawText(text, { x, y: y(top), size, font, color: rgb(0, 0, 0) });
             };
-            
-            const fontSize = 10;
-            const textColor = rgb(0, 0, 0);
-            
-            // 거주자 성명
-            if (formData.residentName) {
-                firstPage.drawText(formData.residentName, {
-                    x: 150, y: height - 200, size: fontSize, font, color: textColor
-                });
+
+            const check = (x, top) => {
+                page.drawText('v', { x: x + 2, y: y(top + 7), size: 11, font, color: rgb(0, 0, 0) });
+            };
+
+            // ── 1. 외국인 (Foreign Tenant) ───────────────────────────────
+            draw(177, 131, document.getElementById('tenantNationality')?.value || '');
+            draw(400, 131, document.getElementById('tenantAlienReg')?.value || '');
+            draw(177, 174, document.getElementById('tenantName')?.value || '');
+            draw(438, 174, document.getElementById('tenantPhone')?.value || '');
+            draw(177, 200, document.getElementById('tenantAddress')?.value || '', 11);
+
+            // ── 2. 제공자 (Provider) ─────────────────────────────────────
+            draw(177, 262, document.getElementById('providerNationality')?.value || '');
+            draw(400, 262, document.getElementById('providerRegNo')?.value || '');
+            draw(177, 302, document.getElementById('providerName')?.value || '');
+            draw(438, 302, document.getElementById('providerPhone')?.value || '');
+
+            // ── 관계 체크박스 ────────────────────────────────────────────
+            if (relationship === 'family')   check(174, 333);
+            if (relationship === 'employer') check(264, 333);
+            if (relationship === 'other')    check(359, 333);
+
+            // ── 소유형태 체크박스 ────────────────────────────────────────
+            if (ownershipType === 'own')   check(174, 367);
+            if (ownershipType === 'rent')  check(264, 367);
+            if (ownershipType === 'other') check(371, 367);
+
+            // ── 주거형태 체크박스 ────────────────────────────────────────
+            if (residenceType === 'private') check(174, 395);
+            if (residenceType === 'dorm')    check(318, 395);
+            if (residenceType === 'hotel')   check(174, 424);
+            if (residenceType === 'other')   check(318, 424);
+
+            // ── 거주/숙소 제공일 ─────────────────────────────────────────
+            draw(180, 460, start_year);
+            draw(275, 460, start_month);
+            draw(356, 460, start_day);
+
+            // ── 확인 날짜 ────────────────────────────────────────────────
+            draw(181, 523, confirm_year);
+            draw(253, 523, confirm_month);
+            draw(318, 523, confirm_day);
+
+            // ── 성명 / 업체명 (글자 수별 폰트 자동 축소) ─────────────────
+            function writeSignName(x, top, text) {
+                if (!text) return;
+                const n = text.length;
+                let size;
+                if      (n <= 10) size = 11;
+                else if (n <= 14) size = 9;
+                else if (n <= 18) size = 8;
+                else if (n <= 24) size = 7;
+                else              size = 6;
+                draw(x, top, text, size);
             }
-            
-            // 거주자 국적
-            if (formData.residentNationality) {
-                firstPage.drawText(formData.residentNationality, {
-                    x: 350, y: height - 200, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 거주자 생년월일
-            if (formData.residentBirthDate) {
-                firstPage.drawText(formData.residentBirthDate, {
-                    x: 150, y: height - 230, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 거주자 여권번호
-            if (formData.residentPassport) {
-                firstPage.drawText(formData.residentPassport, {
-                    x: 350, y: height - 230, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 거주자 체류자격
-            if (formData.residentVisaType) {
-                firstPage.drawText(formData.residentVisaType, {
-                    x: 150, y: height - 260, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 제공자 성명
-            if (formData.providerName) {
-                firstPage.drawText(formData.providerName, {
-                    x: 150, y: height - 320, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 제공자 관계
-            if (formData.providerRelation) {
-                const relationMap = { '가족/친척': '가족·친척', '고용주': '고용주', '기타': '기타' };
-                firstPage.drawText(relationMap[formData.providerRelation] || formData.providerRelation, {
-                    x: 350, y: height - 320, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 제공자 연락처
-            if (formData.providerPhone) {
-                firstPage.drawText(formData.providerPhone, {
-                    x: 150, y: height - 350, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 숙소 주소
-            if (formData.providerAddress) {
-                const maxWidth = 400;
-                const lines = wrapText(formData.providerAddress, maxWidth, fontSize, font);
-                lines.forEach((line, i) => {
-                    firstPage.drawText(line, {
-                        x: 150, y: height - 380 - (i * 15), size: fontSize, font, color: textColor
-                    });
-                });
-            }
-            
-            // 소유 형태
-            if (formData.ownershipType) {
-                const ownerMap = { '자가': '자가', '임대': '임대', '기타': '기타' };
-                firstPage.drawText(ownerMap[formData.ownershipType] || formData.ownershipType, {
-                    x: 150, y: height - 430, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 주거 형태
-            if (formData.housingType) {
-                const houseMap = { '개인주택': '개인주택', '숙박시설': '숙박시설', '기숙사': '기숙사', '기타': '기타' };
-                firstPage.drawText(houseMap[formData.housingType] || formData.housingType, {
-                    x: 350, y: height - 430, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 입주일
-            if (formData.moveInDate) {
-                firstPage.drawText(formData.moveInDate, {
-                    x: 150, y: height - 460, size: fontSize, font, color: textColor
-                });
-            }
-            
-            // 작성일 (WinAnsi 인코딩 오류 방지: 한글 제거, YYYY.MM.DD 형식 사용)
-            const today = new Date();
-            const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
-            firstPage.drawText(dateStr, {
-                x: 400, y: 100, size: fontSize, font, color: textColor
-            });
-            
-            const pdfBytes = await pdfDoc.save();
-            return pdfBytes;
+
+            writeSignName(250, 543, document.getElementById('providerName')?.value || '');
+            writeSignName(250, 559, document.getElementById('companyName')?.value || '');
+
+            // ── 완성된 PDF 반환 ───────────────────────────────────────────
+            const resultBytes = await pdfDoc.save();
+            return new Uint8Array(resultBytes);
         }
 
         // 3. 신원보증서 생성
