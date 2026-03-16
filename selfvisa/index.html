@@ -1444,8 +1444,8 @@
             }
 
             // ── 2. 성명 (가운데 맞춤) ────────────────────────────────────
-            drawCenter(210, 312, surname);
-            drawCenter(344, 312, givenNames);
+            drawCenter(196, 312, surname);
+            drawCenter(349, 312, givenNames);
 
             // ── 3. 생년월일 / 성별 / 국적 ────────────────────────────────
             draw(181, 341, birth_year);
@@ -1491,11 +1491,39 @@
                 }
             }
 
-            // ── 10. 행정정보 공동이용 동의서 - 신청인 성명 (가장 왼쪽 서명란) ──
-            draw(102, 705, `${surname} ${givenNames}`.trim(), 8);
+            // ── 10. 신청인 성명 (2줄 처리 지원) ──────────────────────────
+            const fullName = `${surname} ${givenNames}`.trim();
+            const FULL_LIMIT = 13;
 
-            // ── 11. 신청인 성명 (서명란 오른쪽) ──────────────────────────
-            draw(445, 586, `${surname} ${givenNames}`.trim(), 8);
+            function writeFullName(x, topY, name, size = 8) {
+                if (!name) return;
+                if (name.length <= FULL_LIMIT) {
+                    draw(x, topY, name, size);
+                } else {
+                    const mid = Math.floor(name.length / 2);
+                    const spaceBefore = name.lastIndexOf(' ', mid);
+                    const spaceAfter  = name.indexOf(' ', mid);
+                    let line1, line2;
+                    if (spaceBefore === -1 && spaceAfter === -1) {
+                        line1 = name.slice(0, mid); line2 = name.slice(mid);
+                    } else if (spaceBefore === -1) {
+                        line1 = name.slice(0, spaceAfter); line2 = name.slice(spaceAfter + 1);
+                    } else if (spaceAfter === -1) {
+                        line1 = name.slice(0, spaceBefore); line2 = name.slice(spaceBefore + 1);
+                    } else {
+                        if (mid - spaceBefore <= spaceAfter - mid) {
+                            line1 = name.slice(0, spaceBefore); line2 = name.slice(spaceBefore + 1);
+                        } else {
+                            line1 = name.slice(0, spaceAfter); line2 = name.slice(spaceAfter + 1);
+                        }
+                    }
+                    draw(x, topY - 3, line1, size);
+                    draw(x, topY + 9, line2, size);
+                }
+            }
+
+            writeFullName(102, 705, fullName);  // 행정정보 공동이용 동의서
+            writeFullName(445, 586, fullName);  // 신청인 서명란 (우측)
 
             // ── 완성된 PDF 반환 ───────────────────────────────────────────
             const resultBytes = await pdfDoc.save();
