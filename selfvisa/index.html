@@ -388,31 +388,7 @@
                                 </label>
                             </div>
                             <div id="accommodationFields">
-                                <p style="font-size:13px;font-weight:600;margin-bottom:12px;color:#1e3a5f;">1. 외국인 정보 (거주/숙소를 제공 받는 사람)</p>
-                                <div class="fields-grid-2">
-                                    <div class="field-group">
-                                        <label class="field-label">외국인 성명 *</label>
-                                        <input type="text" id="tenantName" placeholder="기본 정보에서 자동 입력">
-                                    </div>
-                                    <div class="field-group">
-                                        <label class="field-label">외국인 국적 *</label>
-                                        <input type="text" id="tenantNationality" placeholder="기본 정보에서 자동 입력">
-                                    </div>
-                                    <div class="field-group">
-                                        <label class="field-label">외국인등록번호</label>
-                                        <input type="text" id="tenantAlienReg" placeholder="000000-0000000">
-                                    </div>
-                                    <div class="field-group">
-                                        <label class="field-label">외국인 연락처 *</label>
-                                        <input type="tel" id="tenantPhone" placeholder="010-1234-5678">
-                                    </div>
-                                </div>
-                                <div class="field-group" style="margin-top:12px;">
-                                    <label class="field-label">외국인 주소 *</label>
-                                    <input type="text" id="tenantAddress" placeholder="서울시 강남구...">
-                                </div>
-                                
-                                <p style="font-size:13px;font-weight:600;margin-bottom:12px;margin-top:20px;color:#1e3a5f;">2. 숙소 제공자 정보</p>
+                                <p style="font-size:13px;font-weight:600;margin-bottom:12px;color:#1e3a5f;">숙소 제공자 정보</p>
                                 <div class="fields-grid-2">
                                     <div class="field-group">
                                         <label class="field-label">제공자 성명 *</label>
@@ -1616,12 +1592,12 @@
                 page.drawText('v', { x: x + 2, y: y(top + 7), size: 11, font, color: rgb(0, 0, 0) });
             };
 
-            // ── 1. 외국인 (Foreign Tenant) ───────────────────────────────
-            draw(177, 131, document.getElementById('tenantNationality')?.value || '');
-            draw(400, 131, document.getElementById('tenantAlienReg')?.value || '');
-            draw(177, 174, document.getElementById('tenantName')?.value || '');
-            draw(438, 174, document.getElementById('tenantPhone')?.value || '');
-            draw(177, 200, document.getElementById('tenantAddress')?.value || '', 11);
+            // ── 1. 외국인 (Foreign Tenant) - 기본 정보에서 자동 가져오기 ──
+            draw(177, 131, document.getElementById('nationality')?.value?.toUpperCase() || '');
+            draw(400, 131, document.getElementById('alienRegNum')?.value || '');
+            draw(177, 174, (document.getElementById('surnameEn')?.value + ' ' + document.getElementById('givenNameEn')?.value).trim().toUpperCase());
+            draw(438, 174, document.getElementById('cellPhone')?.value || '');
+            draw(177, 200, document.getElementById('address')?.value || '', 11);
 
             // ── 2. 제공자 (Provider) ─────────────────────────────────────
             draw(177, 262, document.getElementById('providerNationality')?.value || '');
