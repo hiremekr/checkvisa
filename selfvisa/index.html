@@ -1383,7 +1383,7 @@
             // ── 원본 PDF 및 폰트 로드 ───────────────────────────────────
             // 두 파일 모두 selfvisa/ 폴더 안에 있어야 합니다
             const [pdfBytes, fontBytes] = await Promise.all([
-                fetch('/selfvisa/assets/통합신청서_신고서_.pdf').then(r => r.arrayBuffer()),
+                fetch('/selfvisa/assets/통합신청서(신고서).pdf').then(r => r.arrayBuffer()),
                 fetch('/selfvisa/fonts/NanumGothicBold.ttf').then(r => r.arrayBuffer()),
             ]);
 
